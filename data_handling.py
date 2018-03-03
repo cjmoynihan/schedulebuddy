@@ -1,5 +1,6 @@
 __author__ = 'cj'
 import sqlite3 as sq3
+import itertools
 import bisect
 from collections import namedtuple
 Event = namedtuple('Event', ['username', 'event_name', 'start_time', 'end_time'])
@@ -29,7 +30,7 @@ class Database:
         """
         Returns all events for a user, sorted by end_time
         """
-        if username not in self.c.execute("SELECT username FROM users"):
+        if username not in itertools.chain(*self.c.execute("SELECT username FROM users")):
             raise ValueError("Username {0} doesn't exist".format(username))
         self.c.execute("SELECT event_name, start_time, end_time FROM events WHERE username = ? ORDER BY end_time",
                        (username,))
@@ -41,7 +42,7 @@ class Database:
         Adds a user to the database
         raises a ValueException if the username already exists in the database
         """
-        if username in self.c.execute("SELECT username FROM users"):
+        if username in itertools.chain(*self.c.execute("SELECT username FROM users")):
             raise ValueError("Username {0} is already taken".format(username))
         self.c.execute("INSERT INTO users(username, password) VALUES(?, ?)", (username, password))
         self.conn.commit()
@@ -54,7 +55,7 @@ class Database:
         raises an exception if the start_time is before another event's end_time and after that event's start_time
         raises an exception if the end_time is after another event's start_time and before that event's end_time
         """
-        if username not in self.c.execute("SELECT username FROM users"):
+        if username not in itertools.chain(*self.c.execute("SELECT username FROM users")):
             raise ValueError("Username {0} is already taken".format(username))
         if end_time < start_time:
             raise ValueError("Event has start time {0} which is after end time {1}".format(start_time, end_time))
