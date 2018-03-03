@@ -10,7 +10,7 @@ import data_handling as db
 
 app = Flask(__name__)
 
-app.config.from_object(__name__) # load config from this file , flaskr.py
+app.config.from_object(__name__)  # load config from this file , flaskr.py
 
 # Load default config and override config from an environment variable
 app.config.update(dict(
