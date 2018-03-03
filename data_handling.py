@@ -8,7 +8,7 @@ import os, sys
 DB_NAME = 'schedule.db'
 SCHEMA = 'schema.sql'
 
-DB_NAME, SCHEMA = map(lambda path: sys.path.join(os.path.dirname(__file__), path), (DB_NAME, SCHEMA))
+DB_NAME, SCHEMA = map(lambda path: os.path.join(os.path.dirname(__file__), path), (DB_NAME, SCHEMA))
 
 class Database:
     def __init__(self):
