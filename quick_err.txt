@@ -1,0 +1,1 @@
+ImmutableMultiDict([])ImmutableMultiDict([('username', 'stefan4472'), ('event_name', 'Hackathon'), ('start_time', '1519534800'), ('end_time', '1519535800')])ImmutableMultiDict([('username', 'stefan4472'), ('event_name', 'Hackathon'), ('start_time', '1519534800'), ('end_time', '1519535800')])

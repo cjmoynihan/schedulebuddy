@@ -20,6 +20,8 @@ app.config.update(dict(
 ))
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
+app.debug=True
+
 # The database interfacing
 def get_db():
     """
@@ -73,10 +75,14 @@ def show_calendar():
 
 @app.route('/add_event', methods=['GET', 'POST'])
 def add_event():
+#    with open(os.path.join(os.path.dirname(__file__), 'quick_err.txt'), 'a+') as f:
+#        f.write(str(request.args))
     try:
         get_db().add_event(
-            request.form['username'], request.form['event_name'],
-            int(request.form['start_time'], int(request.form['end_time']))
+            *request.args.values()
+#            *(val for (arg, val) in request.args)
+#            request.form['username'], request.form['event_name'],
+#            int(request.form['start_time'], int(request.form['end_time']))
         )
     except ValueError as e:
         return str(e)
