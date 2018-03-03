@@ -82,7 +82,7 @@ def add_event():
         return e
     return "Added event successfully!!"
 
-@app.route('/get_event/<username>')
+@app.route('/get_events/<username>')
 def get_events(username):
     try:
         return jsonify(get_db().get_sorted_events(username))
