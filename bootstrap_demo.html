@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<!-- Required meta tags -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+		<!-- Bootstrap CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+		
+		<title>Hello, world!</title>
+	</head>
+	<body>
+		
+		<h1>Hello, world!</h1>
+
+		<div class="row">
+			<div class="col-sm-8">
+				<h3>Calendar will be here</h3>
+				<canvas id="calendarCanvas" width="1400" height="1200"></canvas> 
+			</div>
+			
+			<div class="col-sm-4">
+				<h3>Add Friend Schedules</h3>
+				<div class="checkbox">
+					<label><input type="checkbox" value="1">Friend 1</label>
+				</div>
+				<div class="checkbox">
+					<label><input type="checkbox" value="2">Friend 2</label>
+				</div>
+				<div class="checkbox">
+					<label><input type="checkbox" value="3">Friend 3</label>
+				</div>
+				<div class="checkbox">
+					<label><input type="checkbox" value="4">Friend 4</label>
+				</div>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<h3>Add Event</h3>
+			</div>
+		</div>
+		
+		<form class="form-inline">
+			<div class="form-group">
+				<label for="event_name">Name:</label>
+				<input type="text" class="form-control" id="event_name">
+			</div>
+			
+			<div class="form-group">
+				<label for="event_time">Start Time:</label>
+				<input type="time" class="form-control" id="start_time">
+			</div>
+		</div>
+		</form>
+		
+		<div class="row">
+			<div class="col-lg-12">
+				Start Time:
+				<input type="time" name="start_time">
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-lg-12">
+				End Time:
+				<input type="time" name="end_time">
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-lg-12">
+				Repeat Every:
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<label class="checkbox-inline"><input type="checkbox" value="">Mon</label>
+				<label class="checkbox-inline"><input type="checkbox" value="">Tues</label>
+				<label class="checkbox-inline"><input type="checkbox" value="">Wed</label> 
+				<label class="checkbox-inline"><input type="checkbox" value="">Thurs</label>
+				<label class="checkbox-inline"><input type="checkbox" value="">Fri</label>
+				<label class="checkbox-inline"><input type="checkbox" value="">Sat</label> 
+				<label class="checkbox-inline"><input type="checkbox" value="">Sun</label>
+			</div>
+		</div>
+		
+		<button type="button" class="btn btn-primary" id="submit_event_btn">Create</button>
+	</body>
+	
+	<script>
+	var canvas = document.getElementById("calendarCanvas");
+	var ctx = canvas.getContext("2d");
+	
+	var width = canvas.width;
+	var height = canvas.height;
+	
+	
+/*ctx.moveTo(0,0);
+	ctx.lineTo(200,100);
+	ctx.stroke(); 
+	
+	//context.strokeStyle = '#ff0000';
+	ctx.fillStyle = "#ff0000";
+	ctx.fillRect(20,20,150,100); 
+	
+	ctx.font = "30px Arial";
+	ctx.fillStyle = "#000000";
+	ctx.fillText("Hello World",10,50); */
+	
+	drawCalendar();
+	
+	// 
+	function drawEvent(name, color, day, startTimeHr, startTimeMin, endTimeHr, endTimeMin) {
+		var box_x = day * (canvas.width / 7);
+		var box_y = canvas.height / 24.0 * startTimeHr + canvas.height / 1440.0 * startTimeMin;
+		var box_width = canvas.width / 7;
+		var box_height = canvas.height / 24.0 * (endTimeHr - startTimeHr) + canvas.height / 1440.0 * (endTimeMin - startTimeMin);
+		
+		// draw box
+		ctx.fillStyle = color;
+		ctx.fillRect(box_x, box_y, box_width, box_height);
+		
+		// draw event name centered 
+		var font_size = 30;
+		ctx.font = font_size + "px Arial";
+		ctx.fillStyle = '#000000';
+		ctx.fillText(name, box_x, box_y + font_size);
+		ctx.fillText(startTimeHr + ':' + startTimeMin + ' - ' + endTimeHr + ":" + endTimeMin, box_x, box_y + 2 * font_size);
+	}
+	
+	function drawCalendar() {
+		var day_width = canvas.width / 7;
+		var hour_height = canvas.height / 24;
+		
+		// draw vertical grid lines
+		ctx.fillStyle = '#000000';
+		for (var i = 0; i < 24; i++) {
+			ctx.moveTo(0, i * hour_height);
+			ctx.lineTo(canvas.width, i * hour_height);
+			ctx.stroke();
+		}
+		
+		
+		
+		ctx.fillStyle = '#000000';
+		// draw lines separating days
+		for (var i = 0; i < 8; i++) {
+			ctx.moveTo(i * day_width, 0);
+			ctx.lineTo(i * day_width, canvas.width);
+			ctx.stroke(); 
+		}
+		
+		drawEvent('Practice', '#FF0000', 2, 5, 15, 7, 15);
+		drawEvent('Homework', '#00FF00', 3, 10, 30, 12, 30);
+		drawEvent('Lunch', '#0000FF', 3, 12, 45, 13, 30);
+	}
+	</script>
+</html>
