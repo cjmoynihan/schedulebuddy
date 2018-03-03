@@ -65,11 +65,11 @@ class Database:
         sorted_events = self.get_sorted_events(username)
         # Get where the new element would fit
         new_event_placement = bisect.bisect_left([end for (start, end) in sorted_events], end_time)
-        if start_time < sorted_events[new_event_placement-1].end_time:
+        if new_event_placement > 0 and start_time < sorted_events[new_event_placement-1].end_time:
             raise ValueError("Event {0} starts at {1} before event {2} ends at {3}".format(
                 event_name, start_time,
                 sorted_events[new_event_placement-1].event_name, sorted_events[new_event_placement-1].end_time))
-        if end_time > sorted_events[new_event_placement].end_time:
+        if new_event_placement < len(sorted_events) and end_time > sorted_events[new_event_placement].end_time:
             raise ValueError("Event {0} ends at {1} after event {2} starts at {3}".format(
                 event_name, end_time,
                 sorted_events[new_event_placement].event_name, sorted_events[new_event_placement].start_time
