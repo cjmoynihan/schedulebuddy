@@ -97,6 +97,7 @@ def get_events(username):
     try:
         response = jsonify(get_db().get_sorted_events(username))
         response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
     except ValueError as e:
         return str(e)
 
