@@ -136,7 +136,7 @@
 			var end_hour = parseInt(end_time.substring(0, end_time.indexOf(":")));
 			var end_min = parseInt(end_time.substring(end_time.indexOf(":") + 1, end_time.length));
 			
-			addEvent(event_name, '#00F0F0', day, start_hour, start_min, end_hour, end_min);
+			addEvent(event_name, generateColor(), day, start_hour, start_min, end_hour, end_min);
 			
 			// clear fields
 			document.getElementById('eventNameInput').value = '';
@@ -170,10 +170,11 @@
 	
 	function addEvent(name, color, day, startTimeHr, startTimeMin, endTimeHr, endTimeMin) {
 		alert("Creating event: " + name + " " + color + " " + day + " " + startTimeHr + ":" + startTimeMin + " to " + endTimeHr + ":" + endTimeMin);
+		getUTCTime(day, startTimeHr, startTimeMin);
 		// construct object
 		var event = {
 				name: name,
-				color: '#00F0F0',
+				color: color,
 				day: day,
 				startHour: startTimeHr,
 				startMin: startTimeMin,
@@ -231,6 +232,33 @@
 		for (var i = 0; i < events.length; i++) {
 			drawEvent(events[i]);
 		}
+	}
+	
+	// returns UTC time (ms since Epoch) given day, hour, and minute of given week.
+	// calculates based on time of previous Monday at midnight
+	function getUTCTime(day, hour, minute) {
+		var date = new Date();
+		// get current time in ms
+		var ms = date.getTime();
+		prompt(ms);
+		
+		// subtract of ms for day of week, hour of day, minute of day to get time of midnight Monday
+		ms -= date.getDay() * 86400000;
+		ms -= date.getHours() * 3600000;
+		ms -= date.getMinutes() * 60000;
+		ms -= date.getSeconds() * 1000;
+		ms -= date.getMilliseconds();
+		prompt("Normed to " + ms);
+		// add back times for day, hour, and minute
+		return ms + day * 86400000 + hour * 3600000 + minute * 60000;
+	}
+	
+	// returns hex string of nice, random palette color
+	function generateColor() {
+		var r = (Math.round(Math.random()* 127) + 127).toString(16);
+		var g = (Math.round(Math.random()* 127) + 127).toString(16);
+		var b = (Math.round(Math.random()* 127) + 127).toString(16);
+		return '#' + r + g + b;
 	}
 	</script>
 </html>
