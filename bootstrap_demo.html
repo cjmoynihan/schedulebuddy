@@ -147,6 +147,12 @@
 			var end_min = parseInt(end_time.substring(end_time.indexOf(":") + 1, end_time.length));
 			
 			addEvent(event_name, '#00F0F0', day, start_hour, start_min, end_hour, end_min);
+			
+			// clear fields
+			document.getElementById('eventNameInput').value = '';
+			document.getElementById('startTimeInput').value = '';
+			document.getElementById('endTimeInput').value = '';
+			
 		}
 	};
 	
@@ -162,6 +168,7 @@
 				endHour: endTimeHr,
 				endMin: endTimeMin
 			};
+		
 		// TODO: CHECK FOR INTERSECTS
 		
 		events.push(event);
@@ -170,23 +177,23 @@
 	
 	drawCalendar();
 	
-	// 
-	function drawEvent(name, color, day, startTimeHr, startTimeMin, endTimeHr, endTimeMin) {
-		var box_x = day * (canvas.width / 7);
-		var box_y = canvas.height / 24.0 * startTimeHr + canvas.height / 1440.0 * startTimeMin;
+	// draws given event object to calendar
+	function drawEvent(event) {
+		var box_x = event.day * (canvas.width / 7);
+		var box_y = canvas.height / 24.0 * event.startHour + canvas.height / 1440.0 * event.startMin;
 		var box_width = canvas.width / 7;
-		var box_height = canvas.height / 24.0 * (endTimeHr - startTimeHr) + canvas.height / 1440.0 * (endTimeMin - startTimeMin);
+		var box_height = canvas.height / 24.0 * (event.endHour - event.startHour) + canvas.height / 1440.0 * (event.endMin - event.startMin);
 		
 		// draw box
-		ctx.fillStyle = color;
+		ctx.fillStyle = event.color;
 		ctx.fillRect(box_x, box_y, box_width, box_height);
 		
 		// draw event name centered 
 		var font_size = 30;
 		ctx.font = font_size + "px Arial";
 		ctx.fillStyle = '#000000';
-		ctx.fillText(name, box_x, box_y + font_size);
-		ctx.fillText(startTimeHr + ':' + startTimeMin + ' - ' + endTimeHr + ":" + endTimeMin, box_x, box_y + 2 * font_size);
+		ctx.fillText(event.name, box_x, box_y + font_size);
+		ctx.fillText(event.startHour + ':' + event.startMin + ' - ' + event.endHour + ":" + event.endMin, box_x, box_y + 2 * font_size);
 	}
 	
 	function drawCalendar() {
@@ -201,8 +208,6 @@
 			ctx.stroke();
 		}
 		
-		
-		
 		ctx.fillStyle = '#000000';
 		// draw lines separating days
 		for (var i = 0; i < 8; i++) {
@@ -211,9 +216,9 @@
 			ctx.stroke(); 
 		}
 		
-		drawEvent('Practice', '#FF0000', 2, 5, 15, 7, 15);
-		drawEvent('Homework', '#00FF00', 3, 10, 30, 12, 30);
-		drawEvent('Lunch', '#0000FF', 3, 12, 45, 13, 30);
+		for (var i = 0; i < events.length; i++) {
+			drawEvent(events[i]);
+		}
 	}
 	</script>
 </html>
