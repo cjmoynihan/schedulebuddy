@@ -92,7 +92,7 @@ class Database:
         return self.c.fetchall()
 
     def get_id(self, username):
-        return int(self.c.execute("SELECT user_id FROM users WHERE username = ?", (username,)).fetchone())
+        return int(self.c.execute("SELECT user_id FROM users WHERE username = ?", (username,)).fetchone()[0])
 
     def add_friend(self, username, friend_username):
         self.c.execute("""

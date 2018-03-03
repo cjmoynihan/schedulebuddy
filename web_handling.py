@@ -73,11 +73,15 @@ def logout():
 def show_calendar():
     return "Hello World! We did it!"
 
+def write_error(e):
+    with open(os.path.join(os.path.dirname(__file__), 'quick_err.txt'), 'a+') as f:
+        f.write(str(e) + '\n')
+
+
 @app.route('/add_event', methods=['GET', 'POST'])
 def add_event():
-#    with open(os.path.join(os.path.dirname(__file__), 'quick_err.txt'), 'a+') as f:
-#        f.write(str(request.args))
     try:
+        write_error(list(request.args.values()))
         get_db().add_event(
             *request.args.values()
 #            *(val for (arg, val) in request.args)
