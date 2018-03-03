@@ -57,6 +57,10 @@ def logout():
     flash('You were logged out')
     return redirect(url_for('show_entries'))
 
+@app.route('/')
+def test_page():
+    return 'Hello World!'
+
 # @app.route('/add', methods=['POST'])
 # def add_entry():
 #     if not session.get('logged_in'):
