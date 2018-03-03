@@ -74,13 +74,16 @@ def show_calendar():
 @app.route('/add_event', methods=['GET', 'POST'])
 def add_event():
     try:
-        get_db().add_event(*map(lambda var: request.form[var], ('username', 'event_name', 'start_time', 'end_time')))
+        get_db().add_event(
+            request.form['username'], request.form['event_name'],
+            int(request.form['start_time'], int(request.form['end_time']))
+        )
     except ValueError as e:
         return e
     return "Added event successfully!!"
 
 @app.route('/get_event', methods=['GET'])
-def get_sorted_events():
+def get_events():
     try:
         return jsonify(get_db().get_sorted_events(request.form['username']))
     except ValueError as e:
