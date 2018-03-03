@@ -34,7 +34,7 @@ class Database:
             raise ValueError("Username {0} doesn't exist".format(username))
         self.c.execute("""
         SELECT event_name, start_time, end_time
-        FROM events natural join on users on user_id
+        FROM events join on users on events.user_id=users.user_id
         WHERE username = ?
         ORDER BY end_time""", (username,))
         return [Event(username, event_name, start_time, end_time)
