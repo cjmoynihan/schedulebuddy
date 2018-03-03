@@ -77,6 +77,16 @@
 			</div>
 		</div>
 		
+		<select class="form-control" id="dayInput">
+			<option value="0">Monday</option>
+			<option value="1">Tuesday</option>
+			<option value="2">Wednesday</option>
+			<option value="3">Thursday</option>
+			<option value="4">Friday</option>
+			<option value="5">Saturday</option>
+			<option value="6">Sunday</option>
+		</select>
+		
 		<div class="row">
 			<div class="col-lg-12">
 				Repeat Every:
@@ -103,16 +113,18 @@
 	var canvas = document.getElementById("calendarCanvas");
 	var ctx = canvas.getContext("2d");
 	
-	// list of Event objects
+	// list of Event objects, which will be drawn to the calendar
 	var events = [];
 	
-	// add function to create event from entered info when user clicks submit button
 	var new_event_btn = document.getElementById("submit_event_btn");
+	
+	// create event from entered info when user clicks submit button
 	new_event_btn.onclick = function() {
 		// extract fields
 		var event_name = document.getElementById("eventNameInput").value;
 		var start_time = document.getElementById("startTimeInput").value;
 		var end_time = document.getElementById("endTimeInput").value;
+		var day = document.getElementById("dayInput").value;
 		
 		// make sure user entered info for each field
 		if (event_name === "") {
@@ -125,30 +137,36 @@
 			alert("Please Enter End Time");
 		}
 		else {
-			// parse start, end times from input fields and createEvent()
+			// parse day, start, end times from input fields and createEvent()
+			var day = parseInt(day);
+			
 			var start_hour = parseInt(start_time.substring(0, start_time.indexOf(":")));
 			var start_min = parseInt(start_time.substring(start_time.indexOf(":") + 1, start_time.length));
-			alert("Found " + start_hour + ", " + start_min);
 			
 			var end_hour = parseInt(end_time.substring(0, end_time.indexOf(":")));
 			var end_min = parseInt(end_time.substring(end_time.indexOf(":") + 1, end_time.length));
-			alert("Found " + end_hour + ", " + end_min);
 			
-			drawEvent(event_name, '#00F0F0', start_hour, start_min, end_hour, end_min);
+			addEvent(event_name, '#00F0F0', day, start_hour, start_min, end_hour, end_min);
 		}
 	};
 	
-/*ctx.moveTo(0,0);
-	ctx.lineTo(200,100);
-	ctx.stroke(); 
-	
-	//context.strokeStyle = '#ff0000';
-	ctx.fillStyle = "#ff0000";
-	ctx.fillRect(20,20,150,100); 
-	
-	ctx.font = "30px Arial";
-	ctx.fillStyle = "#000000";
-	ctx.fillText("Hello World",10,50); */
+	function addEvent(name, color, day, startTimeHr, startTimeMin, endTimeHr, endTimeMin) {
+		alert("Creating event: " + name + " " + color + " " + day + " " + startTimeHr + ":" + startTimeMin + " to " + endTimeHr + ":" + endTimeMin);
+		// construct object
+		var event = {
+				name: name,
+				color: '#00F0F0',
+				day: day,
+				startHour: startTimeHr,
+				startMin: startTimeMin,
+				endHour: endTimeHr,
+				endMin: endTimeMin
+			};
+		// TODO: CHECK FOR INTERSECTS
+		
+		events.push(event);
+		drawCalendar();
+	}
 	
 	drawCalendar();
 	
