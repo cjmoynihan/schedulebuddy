@@ -28,10 +28,10 @@ class Database:
         """
         if username not in self.c.execute("SELECT username FROM users"):
             raise ValueError("Username {0} doesn't exist".format(username))
-        self.c.execute("SELECT event_name, start_time, end_time FROM events WHERE username = ?", (username,))
+        self.c.execute("SELECT event_name, start_time, end_time FROM events WHERE username = ? ORDER BY end_time",
+                       (username,))
         return [Event(username, event_name, start_time, end_time)
-                for (event_name, start_time, end_time) in
-                sorted(self.c.fetchall(), key=lambda event:event[-1])]
+                for (event_name, start_time, end_time) in self.c]
 
     def add_user(self, username, password):
         """
