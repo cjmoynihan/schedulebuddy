@@ -73,3 +73,26 @@ class Database:
         self.c.execute("INSERT INTO events(username, event_name, start_time, end_time) VALUES(?, ?, ?, ?",
                        (username, event_name, start_time, end_time))
         self.conn.commit()
+
+    def get_friends(self, username):
+        """
+        Returns all the friends' usernames for a specific username
+        """
+        self.c.execute("""
+        SELECT f.username
+        FROM friends
+        join users u on friends.user_id = u.user_id
+        join users f on friends.friend_id = f.user_id
+        WHERE u.username = ?
+        """, (username,))
+        return self.c.fetchall()
+
+    def get_id(self, username):
+        return self.c.execute("SELECT user_id FROM users WHERE username = ?", (username,)).fetchone()
+
+    def add_friend(self, username, friend_username):
+        self.c.execute("""
+        INSERT INTO friends(user_id, friend_id)
+        VALUES(?, ?)
+        """, map(self.get_id, (username, friend_username)))
+        self.conn.commit()

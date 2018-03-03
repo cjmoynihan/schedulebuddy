@@ -4,7 +4,7 @@ Handles the actual server handling for Flask
 """
 import os
 from flask import Flask, request, session, g, redirect, url_for, abort, \
-     render_template, flash
+     render_template, flash, jsonify
 
 import data_handling as db
 
@@ -70,6 +70,21 @@ def logout():
 @app.route('/show_calendar')
 def show_calendar():
     return "Hello World! We did it!"
+
+@app.route('/add_event', methods=['GET', 'POST'])
+def add_event():
+    try:
+        get_db().add_event(*map(lambda var: request.form[var], ('username', 'event_name', 'start_time', 'end_time')))
+    except ValueError as e:
+        return e
+    return "Added event successfully!!"
+
+@app.route('/get_event', methods=['GET'])
+def get_sorted_events(username):
+    try:
+        return jsonify(get_db().get_sorted_events(username))
+    except ValueError as e:
+        return e
 
 # @app.route('/add', methods=['POST'])
 # def add_entry():

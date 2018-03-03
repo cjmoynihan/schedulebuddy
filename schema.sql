@@ -10,3 +10,7 @@ create table if not exists events(
     start_time int not null,
     end_time int not null
 );
+create table if not exists friends(
+    user_id int not null,
+    friend_id int not null
+);
