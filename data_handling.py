@@ -3,9 +3,12 @@ import sqlite3 as sq3
 import bisect
 from collections import namedtuple
 Event = namedtuple('Event', ['username', 'event_name', 'start_time', 'end_time'])
+import os, sys
 
 DB_NAME = 'schedule.db'
 SCHEMA = 'schema.sql'
+
+DB_NAME, SCHEMA = map(lambda path: sys.path.join(os.path.dirname(__file__), path), (DB_NAME, SCHEMA))
 
 class Database:
     def __init__(self):
