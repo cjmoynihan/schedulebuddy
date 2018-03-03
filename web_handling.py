@@ -82,10 +82,10 @@ def add_event():
         return e
     return "Added event successfully!!"
 
-@app.route('/get_event', methods=['GET'])
-def get_events():
+@app.route('/get_event/<username>')
+def get_events(username):
     try:
-        return jsonify(get_db().get_sorted_events(request.form['username']))
+        return jsonify(get_db().get_sorted_events(username))
     except ValueError as e:
         return e
 
