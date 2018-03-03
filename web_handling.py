@@ -95,7 +95,8 @@ def add_event():
 @app.route('/get_events/<username>')
 def get_events(username):
     try:
-        return jsonify(get_db().get_sorted_events(username))
+        response = jsonify(get_db().get_sorted_events(username))
+        response.headers.add('Access-Control-Allow-Origin', '*')
     except ValueError as e:
         return str(e)
 
