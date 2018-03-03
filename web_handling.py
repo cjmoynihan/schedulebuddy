@@ -79,7 +79,7 @@ def add_event():
             int(request.form['start_time'], int(request.form['end_time']))
         )
     except ValueError as e:
-        return e
+        return str(e)
     return "Added event successfully!!"
 
 @app.route('/get_events/<username>')
@@ -87,7 +87,7 @@ def get_events(username):
     try:
         return jsonify(get_db().get_sorted_events(username))
     except ValueError as e:
-        return e
+        return str(e)
 
 # @app.route('/add', methods=['POST'])
 # def add_entry():
