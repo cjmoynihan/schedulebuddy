@@ -32,8 +32,11 @@ class Database:
         """
         if username not in itertools.chain(*self.c.execute("SELECT username FROM users")):
             raise ValueError("Username {0} doesn't exist".format(username))
-        self.c.execute("SELECT event_name, start_time, end_time FROM events WHERE username = ? ORDER BY end_time",
-                       (username,))
+        self.c.execute("""
+        SELECT event_name, start_time, end_time
+        FROM events natural join on users on user_id
+        WHERE username = ?
+        ORDER BY end_time""", (username,))
         return [Event(username, event_name, start_time, end_time)
                 for (event_name, start_time, end_time) in self.c]
 
@@ -71,8 +74,8 @@ class Database:
                 event_name, end_time,
                 sorted_events[new_event_placement].event_name, sorted_events[new_event_placement].start_time
             ))
-        self.c.execute("INSERT INTO events(username, event_name, start_time, end_time) VALUES(?, ?, ?, ?",
-                       (username, event_name, start_time, end_time))
+        self.c.execute("INSERT INTO events(user_id, event_name, start_time, end_time) VALUES(?, ?, ?, ?",
+                       (self.get_id(username), event_name, start_time, end_time))
         self.conn.commit()
 
     def get_friends(self, username):
