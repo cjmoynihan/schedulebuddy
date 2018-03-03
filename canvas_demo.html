@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<canvas id="myCanvas" width="1400" height="1200"></canvas> 
+
+</body>
+<script>
+	var canvas = document.getElementById("myCanvas");
+	var ctx = canvas.getContext("2d");
+	
+	var width = canvas.width;
+	var height = canvas.height;
+	
+	
+/*ctx.moveTo(0,0);
+	ctx.lineTo(200,100);
+	ctx.stroke(); 
+	
+	//context.strokeStyle = '#ff0000';
+	ctx.fillStyle = "#ff0000";
+	ctx.fillRect(20,20,150,100); 
+	
+	ctx.font = "30px Arial";
+	ctx.fillStyle = "#000000";
+	ctx.fillText("Hello World",10,50); */
+	
+	drawCalendar();
+	
+	// 
+	function drawEvent(name, color, day, startTimeHr, startTimeMin, endTimeHr, endTimeMin) {
+		var box_x = day * (canvas.width / 7);
+		var box_y = canvas.height / 24.0 * startTimeHr + canvas.height / 1440.0 * startTimeMin;
+		var box_width = canvas.width / 7;
+		var box_height = canvas.height / 24.0 * (endTimeHr - startTimeHr) + canvas.height / 1440.0 * (endTimeMin - startTimeMin);
+		
+		// draw box
+		ctx.fillStyle = color;
+		ctx.fillRect(box_x, box_y, box_width, box_height);
+		
+		// draw event name centered 
+		var font_size = 30;
+		ctx.font = font_size + "px Arial";
+	
+		ctx.fillStyle = '#000000';
+		ctx.fillText(name, box_x, box_y + font_size);
+	}
+	
+	function drawCalendar() {
+		var day_width = canvas.width / 7;
+		var hour_height = canvas.height / 24;
+		
+		// draw vertical grid lines
+		ctx.fillStyle = '#000000';
+		for (var i = 0; i < 24; i++) {
+			ctx.moveTo(0, i * hour_height);
+			ctx.lineTo(canvas.width, i * hour_height);
+			ctx.stroke();
+		}
+		
+		
+		
+		ctx.fillStyle = '#000000';
+		// draw lines separating days
+		for (var i = 0; i < 8; i++) {
+			ctx.moveTo(i * day_width, 0);
+			ctx.lineTo(i * day_width, canvas.width);
+			ctx.stroke(); 
+		}
+		
+		drawEvent('Practice', '#FF0000', 2, 5, 15, 7, 15);
+	}
+</script>
+</html>
