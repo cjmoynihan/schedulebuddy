@@ -74,7 +74,7 @@ class Database:
                 event_name, end_time,
                 sorted_events[new_event_placement].event_name, sorted_events[new_event_placement].start_time
             ))
-        self.c.execute("INSERT INTO events(user_id, event_name, start_time, end_time) VALUES(?, ?, ?, ?",
+        self.c.execute("INSERT INTO events(user_id, event_name, start_time, end_time) VALUES(?, ?, ?, ?)",
                        (self.get_id(username), event_name, start_time, end_time))
         self.conn.commit()
 
