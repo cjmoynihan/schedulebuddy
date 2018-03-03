@@ -21,11 +21,11 @@
 
 		<div class="row">
 			<div class="col-sm-8">
-				<h3>Calendar will be here</h3>
+				<h3>Schedule</h3>
 				<canvas id="calendarCanvas" width="1400" height="1200"></canvas> 
 			</div>
 			
-			<div class="col-sm-4">
+			<div class="col-sm-4" id="friendPicker">
 				<h3>Add Friend Schedules</h3>
 				<div class="checkbox">
 					<label><input type="checkbox" value="1">Friend 1</label>
@@ -51,27 +51,29 @@
 		<form class="form-inline">
 			<div class="form-group">
 				<label for="event_name">Name:</label>
-				<input type="text" class="form-control" id="event_name">
+				<input type="text" class="form-control" id="eventNameInput">
 			</div>
 			
+			<!--
 			<div class="form-group">
 				<label for="event_time">Start Time:</label>
 				<input type="time" class="form-control" id="start_time">
 			</div>
+			-->
 		</div>
 		</form>
 		
 		<div class="row">
 			<div class="col-lg-12">
 				Start Time:
-				<input type="time" name="start_time">
+				<input type="time" id="startTimeInput">
 			</div>
 		</div>
 		
 		<div class="row">
 			<div class="col-lg-12">
 				End Time:
-				<input type="time" name="end_time">
+				<input type="time" id="endTimeInput">
 			</div>
 		</div>
 		
@@ -83,13 +85,13 @@
 		
 		<div class="row">
 			<div class="col-lg-12">
-				<label class="checkbox-inline"><input type="checkbox" value="">Mon</label>
-				<label class="checkbox-inline"><input type="checkbox" value="">Tues</label>
-				<label class="checkbox-inline"><input type="checkbox" value="">Wed</label> 
-				<label class="checkbox-inline"><input type="checkbox" value="">Thurs</label>
-				<label class="checkbox-inline"><input type="checkbox" value="">Fri</label>
-				<label class="checkbox-inline"><input type="checkbox" value="">Sat</label> 
-				<label class="checkbox-inline"><input type="checkbox" value="">Sun</label>
+				<label class="checkbox-inline" id="repeatMon"><input type="checkbox" value="0">Mon</label>
+				<label class="checkbox-inline" id="repeatTue"><input type="checkbox" value="1">Tues</label>
+				<label class="checkbox-inline" id="repeatWed"><input type="checkbox" value="2">Wed</label> 
+				<label class="checkbox-inline" id="repeatThu"><input type="checkbox" value="3">Thurs</label>
+				<label class="checkbox-inline" id="repeatFri"><input type="checkbox" value="4">Fri</label>
+				<label class="checkbox-inline" id="repeatSat"><input type="checkbox" value="5">Sat</label> 
+				<label class="checkbox-inline" id="repeatSun"><input type="checkbox" value="6">Sun</label>
 			</div>
 		</div>
 		
@@ -97,12 +99,44 @@
 	</body>
 	
 	<script>
+	// canvas where calendar is drawn
 	var canvas = document.getElementById("calendarCanvas");
 	var ctx = canvas.getContext("2d");
 	
-	var width = canvas.width;
-	var height = canvas.height;
+	// list of Event objects
+	var events = [];
 	
+	// add function to create event from entered info when user clicks submit button
+	var new_event_btn = document.getElementById("submit_event_btn");
+	new_event_btn.onclick = function() {
+		// extract fields
+		var event_name = document.getElementById("eventNameInput").value;
+		var start_time = document.getElementById("startTimeInput").value;
+		var end_time = document.getElementById("endTimeInput").value;
+		
+		// make sure user entered info for each field
+		if (event_name === "") {
+			alert("Please Enter Event Name");
+		}
+		else if (start_time === "") {
+			alert("Please Enter Start Time");
+		}
+		else if (end_time === "") {
+			alert("Please Enter End Time");
+		}
+		else {
+			// parse start, end times from input fields and createEvent()
+			var start_hour = parseInt(start_time.substring(0, start_time.indexOf(":")));
+			var start_min = parseInt(start_time.substring(start_time.indexOf(":") + 1, start_time.length));
+			alert("Found " + start_hour + ", " + start_min);
+			
+			var end_hour = parseInt(end_time.substring(0, end_time.indexOf(":")));
+			var end_min = parseInt(end_time.substring(end_time.indexOf(":") + 1, end_time.length));
+			alert("Found " + end_hour + ", " + end_min);
+			
+			drawEvent(event_name, '#00F0F0', start_hour, start_min, end_hour, end_min);
+		}
+	};
 	
 /*ctx.moveTo(0,0);
 	ctx.lineTo(200,100);
