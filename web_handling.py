@@ -55,6 +55,7 @@ def login():
             if request.form['username'] in get_db().c.execute("SELECT username FROM users").fetchall():
                 error = 'Invalid username'
             else:
+                get_db().add_user(request.form['username'], request.form['password'])
                 session['logged_in'] = True
                 flash('User added. You were logged in')
                 return redirect(url_for('show_calendar'))
