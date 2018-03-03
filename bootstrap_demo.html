@@ -13,32 +13,19 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 		
-		<title>Hello, world!</title>
+		<title>My Schedule - Schedule Buddy</title>
 	</head>
 	<body>
-		
-		<h1>Hello, world!</h1>
-
 		<div class="row">
 			<div class="col-sm-8">
-				<h3>Schedule</h3>
+				<h3>My Schedule</h3>
 				<canvas id="calendarCanvas" width="1400" height="1200"></canvas> 
 			</div>
 			
 			<div class="col-sm-4" id="friendPicker">
-				<h3>Add Friend Schedules</h3>
-				<div class="checkbox">
-					<label><input type="checkbox" value="1">Friend 1</label>
-				</div>
-				<div class="checkbox">
-					<label><input type="checkbox" value="2">Friend 2</label>
-				</div>
-				<div class="checkbox">
-					<label><input type="checkbox" value="3">Friend 3</label>
-				</div>
-				<div class="checkbox">
-					<label><input type="checkbox" value="4">Friend 4</label>
-				</div>
+				<h3 id="friendSection">Add Friend Schedules</h3>
+				<input type="text" class="form-control" id="friendNameInput">
+				<button type="button" class="btn btn-primary" id="addFriendBtn">Add</button>
 			</div>
 		</div>
 		
@@ -116,6 +103,9 @@
 	// list of Event objects, which will be drawn to the calendar
 	var events = [];
 	
+	// list of friends
+	var friends = [];
+	
 	var new_event_btn = document.getElementById("submit_event_btn");
 	
 	// create event from entered info when user clicks submit button
@@ -155,6 +145,28 @@
 			
 		}
 	};
+	
+	var add_friend_btn = document.getElementById("addFriendBtn");
+	
+	// function makes server request and adds friend name to the list, if exists
+	add_friend_btn.onclick = function() {
+		
+		var friend_name = document.getElementById('friendNameInput').value;
+		
+		// TODO: VALIDATION
+		
+		friends.push(friend_name);
+		
+		var new_checkbox = document.createElement('div');	
+		new_checkbox.innerHTML = "<input type='checkbox' value='" + friend_name + "'>" + friend_name + "</input>";
+		new_checkbox.onclick = function() {
+			// TODO: ADD FRIEND'S DATA TO CALENDAR
+		}
+		document.getElementById('friendSection').appendChild(new_checkbox);
+		
+		// clear input box
+		document.getElementById('friendNameInput').value = '';
+	}
 	
 	function addEvent(name, color, day, startTimeHr, startTimeMin, endTimeHr, endTimeMin) {
 		alert("Creating event: " + name + " " + color + " " + day + " " + startTimeHr + ":" + startTimeMin + " to " + endTimeHr + ":" + endTimeMin);
