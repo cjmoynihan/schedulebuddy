@@ -21,8 +21,8 @@
 	// list of friends
 	var friends = [];
 	
-	// stores lists of events friends have scheduled (added as username fields to object)
-	var friendEvents = new Object();
+	// list of friend usernames that are being shown on calendar
+	var shownFriends = [];
 	
 	loadEvents(USERNAME);
 	loadFriends(USERNAME);
@@ -207,9 +207,21 @@
 		console.log("Adding friend " + friend_name + " to UI");
 		var new_checkbox = document.createElement('div');	
 		new_checkbox.innerHTML = "<input type='checkbox' value='" + friend_name + "'>" + friend_name + "</input>";
-		new_checkbox.onclick = function() {
+		new_checkbox.checked = false;
+		new_checkbox.addEventListener('change', function() {
+			console.log("Checkbox status for " + friend_name + " is " + new_checkbox.checked);
+			if (new_checkbox.checked) {
+				// remove friend from shownFriends
+				shownFriends.splice(shownFriends.indexOf(friend_name), 1);
+				console.log("Removing " + friend_name);
+			} else {
+				// add friend to shownFriends
+				shownFriends.push(friend_name);
+				console.log("Adding " + friend_name + " to calendar");
+			}
+			new_checkbox.checked = !new_checkbox.checked;
 			// TODO: ADD FRIEND'S DATA TO CALENDAR
-		};
+		});
 		document.getElementById('friendSection').appendChild(new_checkbox);
 	}
 	
