@@ -57,6 +57,7 @@ def login():
                 error = 'Invalid password'
             else:
                 session['logged_in'] = True
+                session['username'] = request.form['username']
                 flash('You were logged in')
                 return redirect(url_for('show_calendar'))
         elif request.form['action'] == 'Add User':
@@ -65,6 +66,7 @@ def login():
             else:
                 get_db().add_user(request.form['username'], request.form['password'])
                 session['logged_in'] = True
+                session['username'] = request.form['username']
                 flash('User added. You were logged in')
                 return redirect(url_for('show_calendar'))
     return render_template('login.html', error=error)
@@ -72,6 +74,7 @@ def login():
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
+    session.pop('username', None)
     flash('You were logged out')
     return redirect(url_for('login'))
 
