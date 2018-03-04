@@ -134,6 +134,7 @@ class Database:
         events_list = [self.get_sorted_events(friend) for friend in friends]
         # These are the times we can 'make it work'
         overlapping_times = list()
+        start_time, end_time = map(int, (start_time, end_time))
         pointer = start_time
         while pointer < end_time:
             # Move forward the pointer until we find times everyone has free
