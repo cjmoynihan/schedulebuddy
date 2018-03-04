@@ -94,7 +94,8 @@ def add_event():
             username=request.args['username'],
             event_name=request.args['event_name'],
             start_time=request.args['start_time'],
-            end_time=request.args['end_time']
+            end_time=request.args['end_time'],
+            **request.args
             # **request.args
 #            *(val for (arg, val) in request.args)
 #            request.form['username'], request.form['event_name'],

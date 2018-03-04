@@ -3,7 +3,7 @@ import sqlite3 as sq3
 import itertools
 import bisect
 from collections import namedtuple
-Event = namedtuple('Event', ['username', 'event_name', 'start_time', 'end_time'])
+Event = namedtuple('Event', ['username', 'event_name', 'start_time', 'end_time', 'mon', 'tue', 'wed', 'thur', 'fri', 'sat', 'sun'])
 import os, sys
 
 def write_error(e):
@@ -37,12 +37,14 @@ class Database:
         if username not in itertools.chain(*self.c.execute("SELECT username FROM users")):
             raise ValueError("Username {0} doesn't exist".format(username))
         self.c.execute("""
-        SELECT event_name, start_time, end_time
-        FROM events join users on events.user_id=users.user_id
+        SELECT event_name, start_time, end_time, mon, tue, wed, thur, fri, sat, sun
+        FROM events
+        JOIN users ON events.user_id=users.user_id
+        JOIN recurring ON events.user_id=recurring.user_id
         WHERE username = ?
         ORDER BY end_time""", (username,))
-        return [Event(username, event_name, start_time, end_time)
-                for (event_name, start_time, end_time) in self.c]
+        return [Event(username, event_name, start_time, end_time, mon, tue, wed, thur, fri, sat, sun)
+                for (event_name, start_time, end_time, mon, tue, wed, thur, fri, sat, sun) in self.c]
 
     def add_user(self, username, password):
         """
@@ -54,7 +56,7 @@ class Database:
         self.c.execute("INSERT INTO users(username, password) VALUES(?, ?)", (username, password))
         self.conn.commit()
 
-    def add_event(self, username, event_name, start_time, end_time):
+    def add_event(self, username, event_name, start_time, end_time, **days):
         """
         Adds an event to a users calendar
         raises an exception if the username doesn't exist
@@ -82,6 +84,10 @@ class Database:
             ))
         self.c.execute("INSERT INTO events(user_id, event_name, start_time, end_time) VALUES(?, ?, ?, ?)",
                        (self.get_id(username), event_name, start_time, end_time))
+        self.c.execute("SELECT last_insert_row_id()")
+        weekdays = ('mon', 'tue', 'wed', 'thur', 'fri', 'sat', 'sun')
+        self.c.execute("INSERT INTO recurring(event_id, {0}) VALUES(?, ?, ?, ?, ?, ?, ?, ?)".format(', '.join(weekdays)),
+                       (self.c.fetchone() + tuple(days.get(weekday, False) for weekday in weekdays)))
         self.conn.commit()
 
     def get_friends(self, username):
