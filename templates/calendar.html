@@ -482,7 +482,7 @@
 	
 	// create string request to get all friends for user
 	function getFriendsRequest(username) {
-		return "https://cors-anywhere.herokuapp.com/" + HOST_URL + "/get_friends/" + username;
+		return "https://cors-anywhere.herokuapp.com/" + HOST_URL + "/get_friends?username=" + username;
 	}
 	
 	// create string request to add friend for user
@@ -492,7 +492,7 @@
 	
 	// create string request to get all events for user
 	function getEventsRequest(username) {
-		return "https://cors-anywhere.herokuapp.com/" + HOST_URL + "/get_events/" + username;
+		return "https://cors-anywhere.herokuapp.com/" + HOST_URL + "/get_events?username=" + username;
 	}
 	
 	// create string request to add an event for user. Takes times in UTC
