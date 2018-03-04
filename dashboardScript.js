@@ -1,103 +1,4 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<!-- Required meta tags -->
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-		<!-- Bootstrap CSS -->
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
-		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-		
-		<title>My Schedule - Schedule Buddy</title>
-	</head>
-	<body>
-		<div class="row">
-			<div class="col-sm-8">
-				<h3>My Schedule</h3>
-				<canvas id="calendarCanvas" width="1400" height="1200"></canvas> 
-			</div>
-			
-			<div class="col-sm-4" id="friendPicker">
-				<h3 id="friendSection">Add Friend Schedules</h3>
-				<input type="text" class="form-control" id="friendNameInput">
-				<button type="button" class="btn btn-primary" id="addFriendBtn">Add</button>
-			</div>
-		</div>
-		
-		<div class="row">
-			<div class="col-lg-12">
-				<h3>Add Event</h3>
-			</div>
-		</div>
-		
-		<form class="form-inline">
-			<div class="form-group">
-				<label for="event_name">Name:</label>
-				<input type="text" class="form-control" id="eventNameInput">
-			</div>
-			
-			<!--
-			<div class="form-group">
-				<label for="event_time">Start Time:</label>
-				<input type="time" class="form-control" id="start_time">
-			</div>
-			-->
-		</form>
-		
-		<div class="row">
-			<div class="col-lg-12">
-				Start Time:
-				<input type="time" id="startTimeInput">
-			</div>
-		</div>
-		
-		<div class="row">
-			<div class="col-lg-12">
-				End Time:
-				<input type="time" id="endTimeInput">
-			</div>
-		</div>
-		
-		<select class="form-control" id="dayInput">
-			<option value="0">Monday</option>
-			<option value="1">Tuesday</option>
-			<option value="2">Wednesday</option>
-			<option value="3">Thursday</option>
-			<option value="4">Friday</option>
-			<option value="5">Saturday</option>
-			<option value="6">Sunday</option>
-		</select>
-		
-		<div class="row">
-			<div class="col-lg-12">
-				Repeat Every:
-			</div>
-		</div>
-		
-		<div class="row">
-			<div class="col-lg-12">
-				<label class="checkbox-inline" id="repeatMon"><input type="checkbox" value="0">Mon</label>
-				<label class="checkbox-inline" id="repeatTue"><input type="checkbox" value="1">Tues</label>
-				<label class="checkbox-inline" id="repeatWed"><input type="checkbox" value="2">Wed</label> 
-				<label class="checkbox-inline" id="repeatThu"><input type="checkbox" value="3">Thurs</label>
-				<label class="checkbox-inline" id="repeatFri"><input type="checkbox" value="4">Fri</label>
-				<label class="checkbox-inline" id="repeatSat"><input type="checkbox" value="5">Sat</label> 
-				<label class="checkbox-inline" id="repeatSun"><input type="checkbox" value="6">Sun</label>
-			</div>
-		</div>
-		
-		<button type="button" class="btn btn-primary" id="submit_event_btn">Create</button>
-	</body>
-	<script>
-		var USERNAME = 'stefan4472';
-	</script>
-	<script>
-	
 	//console.log(JSON.stringify(JSON.parse('[\n"cj"\n]')));
 	console.log(JSON.stringify(JSON.parse('[\n{\n"end_time": 1519535800,\n"event_name": "Hackathon",\n"start_time": 1519534800,\n"username": "stefan4472"\n}\n]')));
   
@@ -119,7 +20,6 @@
 	
 	loadEvents(USERNAME);
 	loadFriends(USERNAME);
-	drawCalendar();
 	
 	var new_event_btn = document.getElementById("submit_event_btn");
 	
@@ -151,7 +51,7 @@
 			var end_hour = parseInt(end_time.substring(0, end_time.indexOf(":")));
 			var end_min = parseInt(end_time.substring(end_time.indexOf(":") + 1, end_time.length));
 			
-			addEvent(event_name, generateColor(), day, start_hour, start_min, end_hour, end_min);
+			addEvent(event_name, day, start_hour, start_min, end_hour, end_min);
 			
 			// clear fields
 			document.getElementById('eventNameInput').value = '';
@@ -209,6 +109,7 @@
 						console.log('Adding received event: ' + JSON.stringify(parsed_events[i]));
 						events.push(parsed_events[i]);
 					}
+					drawCalendar();
 				}
 			}
 		};
@@ -243,21 +144,20 @@
 		};
 	}
 	
-	function addEvent(name, color, day, startTimeHr, startTimeMin, endTimeHr, endTimeMin) {
-		console.log("Creating event using data: " + name + " " + color + " " + day + " " + startTimeHr + ":" + startTimeMin + " to " + endTimeHr + ":" + endTimeMin);
+	function addEvent(name, day, startTimeHr, startTimeMin, endTimeHr, endTimeMin) {
+		console.log("Creating event using data: " + name + " " + day + " " + startTimeHr + ":" + startTimeMin + " to " + endTimeHr + ":" + endTimeMin);
 		
 		// construct object
 		var event = {
-				name: name,
-				color: color,
-				day: day,
-				startTime: getUTCTime(day, startTimeHr, startTimeMin),
-				endTime: getUTCTime(day, endTimeHr, endTimeMin)
+				username: USERNAME,
+				event_name: name,
+				start_time: getUTCTime(day, startTimeHr, startTimeMin),
+				end_time: getUTCTime(day, endTimeHr, endTimeMin),
 			};
-		
 		// make server request to add event
 		request_obj = new XMLHttpRequest();
-		request_obj.open("GET", addEventRequest(USERNAME, name, startTime, endTime), true);
+		console.log("Sending request " + addEventRequest(USERNAME, name, event.start_time, event.end_time));
+		request_obj.open("GET", addEventRequest(USERNAME, name, event.start_time, event.end_time), true);
 		request_obj.setRequestHeader('Access-Control-Allow-Origin', '*');
 		request_obj.send(null);
 		
@@ -285,28 +185,32 @@
 	
 	// draws given event object to calendar using the given start time of the week
 	function drawEvent(event, weekStartTime) {
+		console.log("Drawing event " + JSON.stringify(event));
+		console.log("Event starts at " + (new Date(event.start_time)).toString() + ". Week starts at " + (new Date(weekStartTime)).toString());
 		// don't do anything if event happens before or after given week
-		if (event.startTime < weekStartTime || event.startTime > weekStartTime + 604800000) {
+		if (event.start_time < weekStartTime || event.start_time > weekStartTime + 604800000) {
+			console.log("Event is not in this week's range");
 			return;
 		}
 		
-		var start_date = new Date(event.startTime);
-		var end_date = new Date(event.endTime);
+		var start_date = new Date(event.start_time);
+		var end_date = new Date(event.end_time);
 		
 		var box_x = start_date.getDay() * (canvas.width / 7);
 		var box_y = canvas.height / 24.0 * start_date.getHours() + canvas.height / 1440.0 * start_date.getMinutes();
 		var box_width = canvas.width / 7;
 		var box_height = canvas.height / 24.0 * (end_date.getHours() - start_date.getHours()) + canvas.height / 1440.0 * (end_date.getMinutes() - start_date.getMinutes());
 		
+		console.log("Box coordinates are " + box_x + ", " + box_y + " with w/h " + box_width + ", " + box_height);
 		// draw box
-		ctx.fillStyle = event.color;
+		ctx.fillStyle = generateColor();
 		ctx.fillRect(box_x, box_y, box_width, box_height);
 		
 		// draw event name centered 
 		var font_size = 30;
 		ctx.font = font_size + "px Arial";
 		ctx.fillStyle = '#000000';
-		ctx.fillText(event.name, box_x, box_y + font_size);
+		ctx.fillText(event.event_name, box_x, box_y + font_size);
 		ctx.fillText(start_date.getHours() + ':' + start_date.getMinutes() + ' - ' + end_date.getHours() + ":" + end_date.getMinutes(), box_x, box_y + 2 * font_size);
 	}
 	
@@ -394,5 +298,3 @@
 		var b = (Math.round(Math.random()* 127) + 127).toString(16);
 		return '#' + r + g + b;
 	}
-	</script>
-</html>
