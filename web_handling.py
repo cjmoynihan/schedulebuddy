@@ -4,7 +4,13 @@ Handles the actual server handling for Flask
 """
 import os
 from flask import Flask, request, session, g, redirect, url_for, abort, \
-     render_template, flash, jsonify
+     render_template, flash
+
+def jsonify(*args, **kwargs):
+    from flask import jsonify
+    response = jsonify(*args, **kwargs)
+    response.headers['Access-Control-Allow-Origin']='*'
+    return response
 
 import data_handling as db
 
@@ -95,35 +101,32 @@ def add_event():
 #            int(request.form['start_time'], int(request.form['end_time']))
         )
     except ValueError as e:
-        raise
-        #return str(e)
+        # raise
+        return str(e)
     return "Added event successfully!!"
 
 @app.route('/get_events/<username>')
 def get_events(username):
     try:
-        response = jsonify(get_db().get_sorted_events(username))
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        return response
+        return jsonify(get_db().get_sorted_events(username))
     except ValueError as e:
         return str(e)
 
-# @app.route('/add', methods=['POST'])
-# def add_entry():
-#     if not session.get('logged_in'):
-#         abort(401)
-#     db = get_db()
-#     db.execute('insert into entries (title, text) values (?, ?)',
-#                  [request.form['title'], request.form['text']])
-#     db.commit()
-#     flash('New entry was successfully posted')
-#     return redirect(url_for('show_entries'))
+@app.route('/add_friend', methods=['GET', 'POST'])
+def add_friend():
+    try:
+        get_db().add_friend(
+            username=request.args['username'],
+            friend_username=request.args['friend_username']
+        )
+        return "Added friend successfully"
+    except ValueError as e:
+        return str(e)
 
-# @app.route('/')
-# def show_entries():
-#     db = get_db()
-#     cur = db.execute('select title, text from entries order by id desc')
-#     entries = cur.fetchall()
-#     return render_template('show_entries.html', entries=entries)
-
+@app.route('/get_friends/<username>')
+def get_friends(username):
+    try:
+        return jsonify(get_db().get_friends(username))
+    except ValueError as e:
+        return str(e)
 

@@ -70,7 +70,7 @@ class Database:
             raise ValueError("Event has start time {0} which is after end time {1}".format(start_time, end_time))
         sorted_events = self.get_sorted_events(username)
         # Get where the new element would fit
-        new_event_placement = bisect.bisect_left([event.end_time for event in sorted_events], end_time)
+        new_event_placement = bisect.bisect_left([int(event.end_time) for event in sorted_events], end_time)
         if new_event_placement > 0 and start_time < sorted_events[new_event_placement-1].end_time:
             raise ValueError("Event {0} starts at {1} before event {2} ends at {3}".format(
                 event_name, start_time,
@@ -101,8 +101,15 @@ class Database:
         return int(self.c.execute("SELECT user_id FROM users WHERE username = ?", (username,)).fetchone()[0])
 
     def add_friend(self, username, friend_username):
-        self.c.execute("""
-        INSERT INTO friends(user_id, friend_id)
-        VALUES(?, ?)
-        """, map(self.get_id, (username, friend_username)))
-        self.conn.commit()
+        user_id, friend_id = map(self.get_id, (username, friend_username))
+        try:
+            next(self.c.execute("SELECT * FROM friends WHERE user_id = ? AND friend_id = ?", (user_id, friend_id)))
+            raise ValueError("{friend_username} is already a friend of {username}".format(
+                friend_username=friend_username, username=username
+            ))
+        except StopIteration:
+            self.c.execute("""
+            INSERT INTO friends(user_id, friend_id)
+            VALUES(?, ?)
+            """, user_id, friend_id)
+            self.conn.commit()
