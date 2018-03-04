@@ -47,7 +47,6 @@
 				<input type="time" class="form-control" id="start_time">
 			</div>
 			-->
-		</div>
 		</form>
 		
 		<div class="row">
@@ -98,6 +97,10 @@
 		var USERNAME = 'stefan4472';
 	</script>
 	<script>
+	
+	//console.log(JSON.stringify(JSON.parse('[\n"cj"\n]')));
+	console.log(JSON.stringify(JSON.parse('[\n{\n"end_time": 1519535800,\n"event_name": "Hackathon",\n"start_time": 1519534800,\n"username": "stefan4472"\n}\n]')));
+  
 	// url of webserver that will handle requests
 	var HOST_URL = 'http://partrico.pythonanywhere.com'
 	
@@ -111,11 +114,12 @@
 	// list of Event objects, which will be drawn to the calendar
 	var events = [];
 	
-	// make HTTP request to get events
-	loadEvents(USERNAME);
-	
 	// list of friends
 	var friends = [];
+	
+	loadEvents(USERNAME);
+	loadFriends(USERNAME);
+	drawCalendar();
 	
 	var new_event_btn = document.getElementById("submit_event_btn");
 	
@@ -152,8 +156,7 @@
 			// clear fields
 			document.getElementById('eventNameInput').value = '';
 			document.getElementById('startTimeInput').value = '';
-			document.getElementById('endTimeInput').value = '';
-			
+			document.getElementById('endTimeInput').value = '';		
 		}
 	};
 	
@@ -164,16 +167,21 @@
 		
 		var friend_name = document.getElementById('friendNameInput').value;
 		
-		// TODO: VALIDATION
+		// create HTTP request to add friend to database
+		request_obj = new XMLHttpRequest();
+		request_obj.open("GET", addFriendRequest(USERNAME, friend_name), true);
+		request_obj.setRequestHeader('Access-Control-Allow-Origin', '*');
+		request_obj.send(null);
 		
-		friends.push(friend_name);
-		
-		var new_checkbox = document.createElement('div');	
-		new_checkbox.innerHTML = "<input type='checkbox' value='" + friend_name + "'>" + friend_name + "</input>";
-		new_checkbox.onclick = function() {
-			// TODO: ADD FRIEND'S DATA TO CALENDAR
-		}
-		document.getElementById('friendSection').appendChild(new_checkbox);
+		// handle response: parse and add to friends list
+		request_obj.onreadystatechange = function() {
+			// request is ready
+			if (request_obj.readyState == 4)  { 
+				alert(request_obj.responseText);
+				friends.push(friend_name);
+				addFriendToUI(friend_name);
+			}
+		};
 		
 		// clear input box
 		document.getElementById('friendNameInput').value = '';
@@ -181,48 +189,75 @@
 	
 	// makes HTTP request to server and parses returned events, adding them to events list
 	function loadEvents(username) {
-		alert("Running request " + getEventsRequest(USERNAME));
+		console.log("Running request " + getEventsRequest(USERNAME));
 		
 		// create HTTP request and use generated GET request
-		request_obj = new XMLHttpRequest();
-		request_obj.open("GET", getEventsRequest(USERNAME), true);
-		request_obj.setRequestHeader('Access-Control-Allow-Origin', '*');
-		request_obj.send(null);
+		request_events = new XMLHttpRequest();
+		request_events.open("GET", getEventsRequest(USERNAME), true);
+		request_events.setRequestHeader('Access-Control-Allow-Origin', '*');
+		request_events.send(null);
 		
 		// handle response: parse and add to events list
-		request_obj.onreadystatechange = function() {
+		request_events.onreadystatechange = function() {
 			// request is ready
-			if (request_obj.readyState == 4)  { 
-				prompt('Received info: ' + request_obj.responseText);
-				
-				// parse reply and add events to list
-				var received_events = JSON.parse(request_obj.responseText);
-				for (int i = 0; i < received_events.length; i++) {
-					events.push(received_events[i]);
+			if (request_events.readyState == 4)  { 
+				console.log('Received events: ' + request_events.responseText);
+				// parse reply and add
+				if (request_events.responseText !== "") {
+					var parsed_events = JSON.parse(request_events.responseText);
+					for (var i = 0; i < parsed_events.length; i++) {
+						console.log('Adding received event: ' + JSON.stringify(parsed_events[i]));
+						events.push(parsed_events[i]);
+					}
 				}
 			}
 		};
 	}
 	
+	// makes HTTP request to server and parses returned friends, adding them to friends list
+	function loadFriends(username) {
+		console.log("Running request " + getFriendsRequest(USERNAME));
+		
+		// create HTTP request and use generated GET request
+		request_friends = new XMLHttpRequest();
+		request_friends.open("GET", getFriendsRequest(USERNAME), true);
+		request_friends.setRequestHeader('Access-Control-Allow-Origin', '*');
+		request_friends.send(null);
+		
+		// handle response: parse and add to events list
+		request_friends.onreadystatechange = function() {
+			// request is ready
+			if (request_friends.readyState == 4)  { 
+				console.log('Received Friends: ' + request_friends.responseText);
+				
+				if (request_friends.responseText !== "") {
+					var parsed_friends = JSON.parse(request_friends.responseText);
+					for (var i = 0; i < parsed_friends.length; i++) {
+						console.log("Adding friend " + parsed_friends[i]);
+						friends.push(parsed_friends[i]);
+						addFriendToUI(parsed_friends[i]);
+					}
+				}
+				//return request_friends.responseText === "" ? [] : JSON.parse(request_friends.responseText);
+			}
+		};
+	}
+	
 	function addEvent(name, color, day, startTimeHr, startTimeMin, endTimeHr, endTimeMin) {
-		alert("Creating event: " + name + " " + color + " " + day + " " + startTimeHr + ":" + startTimeMin + " to " + endTimeHr + ":" + endTimeMin);
-		getUTCTime(day, startTimeHr, startTimeMin);
+		console.log("Creating event using data: " + name + " " + color + " " + day + " " + startTimeHr + ":" + startTimeMin + " to " + endTimeHr + ":" + endTimeMin);
+		
 		// construct object
 		var event = {
 				name: name,
 				color: color,
 				day: day,
-				startHour: startTimeHr,
-				startMin: startTimeMin,
-				endHour: endTimeHr,
-				endMin: endTimeMin
+				startTime: getUTCTime(day, startTimeHr, startTimeMin),
+				endTime: getUTCTime(day, endTimeHr, endTimeMin)
 			};
-		
-		// TODO: CHECK FOR INTERSECTS
 		
 		// make server request to add event
 		request_obj = new XMLHttpRequest();
-		request_obj.open("GET", addEventRequest(USERNAME, name, getUTCTime(day, startTimeHr, startTimeMin), getUTCTime(day, endTimeHr, endTimeMin)), true);
+		request_obj.open("GET", addEventRequest(USERNAME, name, startTime, endTime), true);
 		request_obj.setRequestHeader('Access-Control-Allow-Origin', '*');
 		request_obj.send(null);
 		
@@ -230,23 +265,38 @@
 		request_obj.onreadystatechange = function() {
 			// request is ready
 			if (request_obj.readyState == 4)  { 
-				prompt('Received info: ' + request_obj.responseText);
+				console.log('Server response to adding event: ' + request_obj.responseText);
+				// add event and redraw calendar
+				events.push(event);
+				drawCalendar();
 			}
 		};
-		
-		// add event and redraw calendar
-		events.push(event);
-		drawCalendar();
 	}
 	
-	drawCalendar();
+	function addFriendToUI(friend_name) {
+		console.log("Adding friend " + friend_name + " to UI");
+		var new_checkbox = document.createElement('div');	
+		new_checkbox.innerHTML = "<input type='checkbox' value='" + friend_name + "'>" + friend_name + "</input>";
+		new_checkbox.onclick = function() {
+			// TODO: ADD FRIEND'S DATA TO CALENDAR
+		};
+		document.getElementById('friendSection').appendChild(new_checkbox);
+	}
 	
-	// draws given event object to calendar
-	function drawEvent(event) {
-		var box_x = event.day * (canvas.width / 7);
-		var box_y = canvas.height / 24.0 * event.startHour + canvas.height / 1440.0 * event.startMin;
+	// draws given event object to calendar using the given start time of the week
+	function drawEvent(event, weekStartTime) {
+		// don't do anything if event happens before or after given week
+		if (event.startTime < weekStartTime || event.startTime > weekStartTime + 604800000) {
+			return;
+		}
+		
+		var start_date = new Date(event.startTime);
+		var end_date = new Date(event.endTime);
+		
+		var box_x = start_date.getDay() * (canvas.width / 7);
+		var box_y = canvas.height / 24.0 * start_date.getHours() + canvas.height / 1440.0 * start_date.getMinutes();
 		var box_width = canvas.width / 7;
-		var box_height = canvas.height / 24.0 * (event.endHour - event.startHour) + canvas.height / 1440.0 * (event.endMin - event.startMin);
+		var box_height = canvas.height / 24.0 * (end_date.getHours() - start_date.getHours()) + canvas.height / 1440.0 * (end_date.getMinutes() - start_date.getMinutes());
 		
 		// draw box
 		ctx.fillStyle = event.color;
@@ -257,10 +307,11 @@
 		ctx.font = font_size + "px Arial";
 		ctx.fillStyle = '#000000';
 		ctx.fillText(event.name, box_x, box_y + font_size);
-		ctx.fillText(event.startHour + ':' + event.startMin + ' - ' + event.endHour + ":" + event.endMin, box_x, box_y + 2 * font_size);
+		ctx.fillText(start_date.getHours() + ':' + start_date.getMinutes() + ' - ' + end_date.getHours() + ":" + end_date.getMinutes(), box_x, box_y + 2 * font_size);
 	}
 	
 	function drawCalendar() {
+		console.log("Drawing Calendar");
 		var day_width = canvas.width / 7;
 		var hour_height = canvas.height / 24;
 		
@@ -280,9 +331,22 @@
 			ctx.stroke(); 
 		}
 		
+		var start_time = getWeekStartTimeUTC((new Date()).getTime());
 		for (var i = 0; i < events.length; i++) {
-			drawEvent(events[i]);
+			drawEvent(events[i], start_time);
 		}
+	}
+	
+	// returns start time (ms since Epoch) of the week for the given time
+	function getWeekStartTimeUTC(ms) {
+		var date = new Date(ms);
+		// subtract off ms for day of week, hour of day, minute of day to get time of midnight Monday
+		ms -= date.getDay() * 86400000;
+		ms -= date.getHours() * 3600000;
+		ms -= date.getMinutes() * 60000;
+		ms -= date.getSeconds() * 1000;
+		ms -= date.getMilliseconds();
+		return ms;
 	}
 	
 	// returns UTC time (ms since Epoch) given day, hour, and minute of given week.
@@ -291,7 +355,6 @@
 		var date = new Date();
 		// get current time in ms
 		var ms = date.getTime();
-		prompt(ms);
 		
 		// subtract of ms for day of week, hour of day, minute of day to get time of midnight Monday
 		ms -= date.getDay() * 86400000;
@@ -299,23 +362,19 @@
 		ms -= date.getMinutes() * 60000;
 		ms -= date.getSeconds() * 1000;
 		ms -= date.getMilliseconds();
-		prompt("Normed to " + ms);
 		// add back times for day, hour, and minute
 		return ms + day * 86400000 + hour * 3600000 + minute * 60000;
 	}
 	
-	// returns hex string of nice, random palette color
-	function generateColor() {
-		var r = (Math.round(Math.random()* 127) + 127).toString(16);
-		var g = (Math.round(Math.random()* 127) + 127).toString(16);
-		var b = (Math.round(Math.random()* 127) + 127).toString(16);
-		return '#' + r + g + b;
+	// create string request to get all friends for user
+	function getFriendsRequest(username) {
+		return "https://cors-anywhere.herokuapp.com/" + HOST_URL + "/get_friends/" + username;
 	}
 	
-	// create string request to get all friends for user
-	/*function getFriendsRequest(username) {
-		return 
-	}*/
+	// create string request to add friend for user
+	function addFriendRequest(username, friendName) {
+		return "https://cors-anywhere.herokuapp.com/" + HOST_URL + "/add_friend?username=" + username + "&friend_username=" + friendName;
+	}
 	
 	// create string request to get all events for user
 	function getEventsRequest(username) {
@@ -326,6 +385,14 @@
 	function addEventRequest(username, event_name, start_time_utc, end_time_utc) {
 		return "https://cors-anywhere.herokuapp.com/" + HOST_URL + "/add_event?username=" + USERNAME + "&event_name=" + event_name + "&start_time=" + start_time_utc + "&end_time=" + end_time_utc;
 		//add_event?username=stefan4472&event_name=Hackathon&start_time=1519534800&end_time=1519535800
+	}
+	
+	// returns hex string of nice, random palette color
+	function generateColor() {
+		var r = (Math.round(Math.random()* 127) + 127).toString(16);
+		var g = (Math.round(Math.random()* 127) + 127).toString(16);
+		var b = (Math.round(Math.random()* 127) + 127).toString(16);
+		return '#' + r + g + b;
 	}
 	</script>
 </html>
