@@ -158,7 +158,7 @@ def get_events(username):
     except ValueError as e:
         return str(e)
 
-@app.route('/get_events', methods=['GET', 'POST'])
+@app.route('/get_events', methods=['GET', 'POST', 'OPTIONS'])
 @crossdomain(origin='*')
 def fixed_get_events():
     try:
@@ -185,7 +185,7 @@ def get_friends(username):
         return str(e)
 
 
-@app.route('/get_friends', methods=['GET','POST'])
+@app.route('/get_friends', methods=['GET','POST','OPTIONS'])
 @crossdomain(origin='*')
 def fixed_get_friends():
     try:
