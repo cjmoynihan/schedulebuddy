@@ -98,7 +98,13 @@ class Database:
         return self.c.fetchall()
 
     def get_id(self, username):
-        return int(self.c.execute("SELECT user_id FROM users WHERE username = ?", (username,)).fetchone()[0])
+        """
+        Gets the id from a user
+        """
+        user_id = self.c.execute("SELECT user_id FROM users WHERE username = ?").fetchone()
+        if user_id is None:
+            raise ValueError("User {0} doesn't exist".format(username))
+        return int(user_id[0])
 
     def add_friend(self, username, friend_username):
         """
