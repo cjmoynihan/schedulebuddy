@@ -85,7 +85,11 @@ def add_event():
         write_error(request.args)
         write_error(request.args['username'])
         get_db().add_event(
-            **request.args
+            username=request.args['username'],
+            event_name=request.args['event_name'],
+            start_time=request.args['start_time'],
+            end_time=request.args['end_time']
+            # **request.args
 #            *(val for (arg, val) in request.args)
 #            request.form['username'], request.form['event_name'],
 #            int(request.form['start_time'], int(request.form['end_time']))
