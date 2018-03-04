@@ -27,6 +27,22 @@
 	loadEvents(USERNAME);
 	loadFriends(USERNAME);
 	
+	var day_width = canvas.width / 7;
+		
+	// draw week days and dates along top canvas
+	var datesCanvas = document.getElementById('datesCanvas');
+	var datesCtx = datesCanvas.getContext('2d');
+		
+	datesCtx.font = '30px Arial';
+	datesCtx.fillStyle = '#000000';
+		
+	// draw day of week and date on top of each day
+	week_date = new Date(calendarStartTime);
+	for (var i = 0; i < 7; i++) {
+		datesCtx.fillText(formatDate(week_date), i * day_width, 32);
+		week_date.setTime(week_date.getTime() + 86400000);
+	}
+		
 	var new_event_btn = document.getElementById("submit_event_btn");
 	
 	// create event from entered info when user clicks submit button
@@ -52,6 +68,10 @@
 		}
 		else if (end_time === "") {
 			alert("Please Enter End Time");
+			return;
+		}
+		else if (end_time < start_time) {
+			alert("End time can't be before start time");
 			return;
 		}
 		else {
@@ -262,23 +282,9 @@
 		var day_width = canvas.width / 7;
 		var hour_height = canvas.height / 24;
 		
-		// draw week days and dates along top canvas
-		var datesCanvas = document.getElementById('datesCanvas');
-		var datesCtx = datesCanvas.getContext('2d');
-		
-		// white outer
-		datesCtx.fillStyle = '#FFFFFF';
-		datesCtx.fillRect(0, 0, datesCanvas.width, datesCanvas.height);
-		
-		datesCtx.font = '30px Arial';
-		datesCtx.fillStyle = '#000000';
-		
-		// draw day of week and date on top of each day
-		week_date = new Date(weekStartTime);
-		for (var i = 0; i < 7; i++) {
-			datesCtx.fillText(formatDate(week_date), i * day_width, 32);
-			week_date.setTime(week_date.getTime() + 86400000);
-		}
+		// refresh calendar
+		ctx.fillStyle = '#FFFFFF';
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
 		
 		// draw vertical grid lines
 		ctx.fillStyle = '#000000';
@@ -304,15 +310,34 @@
 			// all events will be drawn in one color
 			var display_color = generateColor();
 			
-			// TODO: HTML REQUEST
-			for (var i = 0; i < events.length; i++) {
-				drawEvent(events[i], start_time, display_color);
-			}
-		} else {
-			// draw user's events
-			for (var i = 0; i < events.length; i++) {
-				drawEvent(events[i], start_time);
-			}
+			
+			// make server request to get event inverses
+			request_obj = new XMLHttpRequest();
+			console.log("Sending request " + getInverseRequest(shownFriends, start_time, start_time + 604800000));
+			request_obj.open("GET", getInverseRequest(shownFriends, start_time, start_time + 604800000), true);
+			request_obj.setRequestHeader('Access-Control-Allow-Origin', '*');
+			request_obj.send(null);
+			
+			// handle response: parse and add to events list
+			request_obj.onreadystatechange = function() {
+				// request is ready
+				if (request_obj.readyState == 4)  { 
+					console.log('Server response to event inverses: ' + request_obj.responseText);
+					if (request_obj.responseText === '[]') {
+						alert("None of your friends are available :(");
+					} else {
+						var inverted_events = JSON.parse(request_obj.responseText);
+						for (var i = 0; i < inverted_events.length; i++) {
+							drawEvent(inverted_events[i], start_time);
+						}
+					}
+				}
+			};
+		}
+		
+		// draw user's events
+		for (var i = 0; i < events.length; i++) {
+			drawEvent(events[i], start_time);
 		}
 	}
 	
@@ -364,6 +389,15 @@
 	function addEventRequest(username, event_name, start_time_utc, end_time_utc) {
 		return "https://cors-anywhere.herokuapp.com/" + HOST_URL + "/add_event?username=" + USERNAME + "&event_name=" + event_name + "&start_time=" + start_time_utc + "&end_time=" + end_time_utc;
 		//add_event?username=stefan4472&event_name=Hackathon&start_time=1519534800&end_time=1519535800
+	}
+	
+	function getInverseRequest(usernames, start_time, end_time) {
+		var request_str = "https://cors-anywhere.herokuapp.com/" + HOST_URL + "/get_inverse?usernames=" + USERNAME;
+		for (var i = 0; i < usernames.length; i++) {
+			request_str += ',' + usernames[i];
+		}
+		request_str += '&start_time=' + start_time + "&end_time=" + end_time;
+		return request_str;
 	}
 	
 	// returns hex string of nice, random palette color
