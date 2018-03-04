@@ -150,11 +150,11 @@ class Database:
             else:
                 try:
                     next_end_time = min((events[0].start_time for events in events_list if events))
-                    overlapping_times.append(Event('', '', pointer, min(next_end_time, end_time, *([False]*7))))
+                    overlapping_times.append(Event('', '', pointer, min(next_end_time, end_time, False, False, False, False, False, False, False)))
                     pointer = next_end_time
                 except ValueError:
                     if pointer != end_time:
-                        overlapping_times.append(Event('', '', pointer, end_time, *([False]*7)))
+                        overlapping_times.append(Event('', '', pointer, end_time, False, False, False, False, False, False, False))
                         # overlapping_times.append((pointer, end_time))
                     break
         # overlapping_times = [{
