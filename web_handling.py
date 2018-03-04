@@ -51,16 +51,16 @@ def login():
     error = None
     if request.method == 'POST':
         if request.form['action'] == 'Login':
-            if request.form['username'] not in get_db().c.execute("SELECT username FROM users").fetchall():
+            if (request.form['username'],) not in get_db().c.execute("SELECT username FROM users").fetchall():
                 error = 'Invalid username'
-            elif request.form['password'] not in get_db().c.execute("SELECT password FROM users").fetchall():
+            elif (request.form['password'],) not in get_db().c.execute("SELECT password FROM users").fetchall():
                 error = 'Invalid password'
             else:
                 session['logged_in'] = True
                 flash('You were logged in')
                 return redirect(url_for('show_calendar'))
         elif request.form['action'] == 'Add User':
-            if request.form['username'] in get_db().c.execute("SELECT username FROM users").fetchall():
+            if (request.form['username'],) in get_db().c.execute("SELECT username FROM users").fetchall():
                 error = 'Invalid username'
             else:
                 get_db().add_user(request.form['username'], request.form['password'])
