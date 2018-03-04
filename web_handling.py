@@ -159,7 +159,7 @@ def add_event():
         return str(e)
     return "Added event successfully!!"
 
-@app.route('/get_events/<username>')
+@app.route('/get_events/<username>', methods=['OPTIONS'])
 @crossdomain(origin='*')
 def get_events(username):
     try:
@@ -178,7 +178,7 @@ def add_friend():
     except ValueError as e:
         return str(e)
 
-@app.route('/get_friends/<username>')
+@app.route('/get_friends/<username>', methods=['OPTIONS'])
 @crossdomain(origin='*')
 def get_friends(username):
     try:
