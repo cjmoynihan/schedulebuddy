@@ -82,14 +82,16 @@ def write_error(e):
 def add_event():
     try:
         write_error(list(request.args.values()))
+        write_error(request.args)
         get_db().add_event(
-            *request.args.values()
+            **request.args
 #            *(val for (arg, val) in request.args)
 #            request.form['username'], request.form['event_name'],
 #            int(request.form['start_time'], int(request.form['end_time']))
         )
     except ValueError as e:
-        return str(e)
+        raise
+        #return str(e)
     return "Added event successfully!!"
 
 @app.route('/get_events/<username>')
