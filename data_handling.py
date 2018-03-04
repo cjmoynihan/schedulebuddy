@@ -62,7 +62,8 @@ class Database:
         raises an exception if the start_time is before another event's end_time and after that event's start_time
         raises an exception if the end_time is after another event's start_time and before that event's end_time
         """
-        write_error(username)
+        start_time, end_time = map(int, (start_time, end_time))
+        # write_error(username)
         if username not in itertools.chain(*self.c.execute("SELECT username FROM users")):
             raise ValueError("Username {0} doesn't exist".format(username))
         if end_time < start_time:
