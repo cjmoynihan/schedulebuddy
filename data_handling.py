@@ -157,6 +157,10 @@ class Database:
                         overlapping_times.append(Event('', '', pointer, end_time, *([False]*7)))
                         # overlapping_times.append((pointer, end_time))
                     break
+        overlapping_times = [{
+            'start_time': event.start_time,
+            'end_time': event.end_time
+        } for event in overlapping_times]
         return overlapping_times
 
 if __name__ == '__main__':
