@@ -137,7 +137,7 @@ class Database:
         pointer = start_time
         while pointer < end_time:
             # Move forward the pointer until we find times everyone has free
-            for event_index in range(events_list):
+            for event_index in range(len(events_list)):
                 try:
                     # Remove all the events that don't matter
                     events_list[event_index] = events_list[event_index][next(i for (i, event) in enumerate(events_list[event_index]) if event.end_time > pointer):]
