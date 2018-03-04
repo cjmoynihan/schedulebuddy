@@ -40,7 +40,7 @@ class Database:
         SELECT event_name, start_time, end_time, mon, tue, wed, thur, fri, sat, sun
         FROM events
         JOIN users ON events.user_id=users.user_id
-        JOIN recurring ON events.user_id=recurring.user_id
+        JOIN recurring ON events.event_id=recurring.event_id
         WHERE username = ?
         ORDER BY end_time""", (username,))
         return [Event(username, event_name, start_time, end_time, mon, tue, wed, thur, fri, sat, sun)
