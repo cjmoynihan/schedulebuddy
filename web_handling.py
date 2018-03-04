@@ -135,6 +135,7 @@ def write_error(e):
 
 
 @app.route('/add_event', methods=['GET', 'POST'])
+@crossdomain(origin='*', headers='*')
 def add_event():
     try:
         write_error(list(request.args.values()))
@@ -153,6 +154,7 @@ def add_event():
     return "Added event successfully!!"
 
 @app.route('/get_events/<username>')
+@crossdomain(origin='*', headers='*')
 def get_events(username):
     try:
         return jsonify(get_db().get_sorted_events(username))
@@ -168,6 +170,7 @@ def fixed_get_events():
         return str(e)
 
 @app.route('/add_friend', methods=['GET', 'POST'])
+@crossdomain(origin='*', headers='*')
 def add_friend():
     try:
         get_db().add_friend(
@@ -179,6 +182,7 @@ def add_friend():
         return str(e)
 
 @app.route('/get_friends/<username>')
+@crossdomain(origin='*', headers='*')
 def get_friends(username):
     try:
         return jsonify(get_db().get_friends(username))
@@ -195,6 +199,7 @@ def fixed_get_friends():
         return str(e)
 
 @app.route('/get_inverse', methods=['GET', 'POST'])
+@crossdomain(origin='*', headers='*')
 def get_inverse():
     try:
         return jsonify(
