@@ -1,49 +1,49 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<!-- Required meta tags -->
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+{% extends "layout.html" %}
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-		<!-- Bootstrap CSS -->
-		<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
+	<!-- Bootstrap CSS -->
+	<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
 
-		<!-- Cerulean Bootstrap CSS -->
-		<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
-		
-		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-		<!--<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-		<!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
-		
-		<title>My Schedule - Schedule Buddy</title>
-	</head>
-	<body>
+	<!-- Cerulean Bootstrap CSS -->
+	<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+	<!--<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+	<title>My Schedule - Schedule Buddy</title>
+</head>
+{% block body %}
+    {% if session.logged_in %}
 		<div class="row">
 			<div class="col-sm-8">
 				<h3>My Schedule</h3>
 				<!-- set canvas to fill space allotted by Bootstrap -->
 				<!-- displays dates and days above calendar (workaround to make drawing the calendar easier...) -->
 				<canvas id="datesCanvas" width="1400" height="32" style="width: 100%;"></canvas>
-				<canvas id="calendarCanvas" width="1400" height="1200" style="width: 100%;height: auto;"></canvas> 
+				<canvas id="calendarCanvas" width="1400" height="1200" style="width: 100%;height: auto;"></canvas>
 			</div>
-			
+
 			<div class="col-sm-4" id="friendPicker">
 				<h3 id="friendSection">Add Friend Schedules</h3>
-				
+
 				<h3>Add Friend</h3>
 				<div class="input-group ">
 					<input type="text" class="form-control" id="friendNameInput">
 					<button type="button" class="btn btn-primary" id="addFriendBtn">Add</button>
 				</div>
-				
+
 				<h3>Add Event</h3>
 				<form class="form-inline">
 					<div class="form-group">
 						<label for="event_name">Name:</label>
 						<input type="text" class="form-control" id="eventNameInput">
 					</div>
-			
+
 				</form>
 				Start Time:
 				<input type="time" id="startTimeInput">
@@ -74,20 +74,22 @@
 				Repeat Every:
 				<label class="checkbox-inline" id="repeatMon"><input type="checkbox" value="0">Mon</label>
 				<label class="checkbox-inline" id="repeatTue"><input type="checkbox" value="1">Tues</label>
-				<label class="checkbox-inline" id="repeatWed"><input type="checkbox" value="2">Wed</label> 
+				<label class="checkbox-inline" id="repeatWed"><input type="checkbox" value="2">Wed</label>
 				<label class="checkbox-inline" id="repeatThu"><input type="checkbox" value="3">Thurs</label>
 				<label class="checkbox-inline" id="repeatFri"><input type="checkbox" value="4">Fri</label>
-				<label class="checkbox-inline" id="repeatSat"><input type="checkbox" value="5">Sat</label> 
+				<label class="checkbox-inline" id="repeatSat"><input type="checkbox" value="5">Sat</label>
 				<label class="checkbox-inline" id="repeatSun"><input type="checkbox" value="6">Sun</label>
-		
+
 				<button type="button" class="btn btn-primary" id="submit_event_btn">Create</button>
 			</div>
 		</div>
-		
-		
-	</body>
-	<script>
+
+
+    {% endif %}
+{% endblock %}
+<script>
 		var USERNAME = 'stefan4472'; // TODO: SET IN TEMPLATE
 	</script>
-	<script src="dashboardScript.js"></script> 
-</html>
+<script src="dashboardScript.js"></script>
+There'll be a calendar here later :P
+{{ session.username }}
