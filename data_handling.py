@@ -84,7 +84,7 @@ class Database:
             ))
         self.c.execute("INSERT INTO events(user_id, event_name, start_time, end_time) VALUES(?, ?, ?, ?)",
                        (self.get_id(username), event_name, start_time, end_time))
-        self.c.execute("SELECT last_insert_row_id()")
+        self.c.execute("SELECT last_insert_rowid()")
         weekdays = ('mon', 'tue', 'wed', 'thur', 'fri', 'sat', 'sun')
         self.c.execute("INSERT INTO recurring(event_id, {0}) VALUES(?, ?, ?, ?, ?, ?, ?, ?)".format(', '.join(weekdays)),
                        (self.c.fetchone() + tuple(days.get(weekday, False) for weekday in weekdays)))
