@@ -95,7 +95,7 @@ def add_event():
             event_name=request.args['event_name'],
             start_time=request.args['start_time'],
             end_time=request.args['end_time'],
-            days={day: request.arg.get(day, False) for day in ('mon','tue','wed','thur','fri','sat','sun')}
+            days={day: request.args.get(day, False) for day in ('mon','tue','wed','thur','fri','sat','sun')}
         )
     except ValueError as e:
         # raise
