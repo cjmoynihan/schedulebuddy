@@ -136,4 +136,4 @@ def get_inverse():
             end_time=request.args['end_time']
         ))
     except ValueError as e:
-        return e
+        return str(e)
