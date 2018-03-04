@@ -240,7 +240,7 @@
 	// color is optional, by default generated randomly
 	function drawEvent(event, weekStartTime, color='') {
 		console.log("Drawing event " + JSON.stringify(event));
-		console.log("Event starts at " + (new Date(event.start_time)).toString() + ". Week starts at " + (new Date(weekStartTime)).toString());
+		//console.log("Event starts at " + (new Date(event.start_time)).toString() + ". Week starts at " + (new Date(weekStartTime)).toString());
 		// don't do anything if event happens before or after given week
 		if (event.start_time < weekStartTime || event.start_time > weekStartTime + 604800000) {
 			console.log("Event is not in this week's range");
@@ -250,12 +250,26 @@
 		var start_date = new Date(event.start_time);
 		var end_date = new Date(event.end_time);
 		
+		while (end_date.getDay() !== start_date.getDay()) {
+			var same_day = new Date(start_date);
+			same_day.setHours(23);
+			same_day.setMinutes(59);
+			drawSingleDayEvent(start_date, same_day, event, weekStartTime, color);
+			start_date.setTime(end_date.getTime());
+			
+			start_date.setHours(0);
+			start_date.setMinutes(0);	
+		}
+		drawSingleDayEvent(start_date, end_date, event, weekStartTime, color);
+	}
+	
+	function drawSingleDayEvent(start_date, end_date, event, weekStartTime, color='') {
 		var box_x = start_date.getDay() * (canvas.width / 7);
 		var box_y = canvas.height / 24.0 * start_date.getHours() + canvas.height / 1440.0 * start_date.getMinutes();
 		var box_width = canvas.width / 7;
 		var box_height = canvas.height / 24.0 * (end_date.getHours() - start_date.getHours()) + canvas.height / 1440.0 * (end_date.getMinutes() - start_date.getMinutes());
 		
-		console.log("Box coordinates are " + box_x + ", " + box_y + " with w/h " + box_width + ", " + box_height);
+		//console.log("Box coordinates are " + box_x + ", " + box_y + " with w/h " + box_width + ", " + box_height);
 		// draw box
 		ctx.fillStyle = color === '' ? generateColor() : color;
 		ctx.fillRect(box_x, box_y, box_width, box_height);
@@ -273,7 +287,7 @@
 			var time_font_size = (box_height - event_font_size > 32) ? 20 : box_height - event_font_size;
 			ctx.font = time_font_size + 'px Arial';
 			ctx.fillText(formatTime(start_date.getHours(), start_date.getMinutes()) + ' - ' + formatTime(end_date.getHours(), end_date.getMinutes()), box_x, box_y + event_font_size + time_font_size);
-		}
+		}	
 	}
 	
 	// draws calendar with all events starting at weekStartTime
@@ -328,7 +342,9 @@
 					} else {
 						var inverted_events = JSON.parse(request_obj.responseText);
 						for (var i = 0; i < inverted_events.length; i++) {
-							drawEvent(inverted_events[i], start_time);
+							if (inverted_events[i].start_time !== '' && inverted_events[i].end_time !== '') {
+								drawEvent(inverted_events[i], start_time, display_color);
+							}
 						}
 					}
 				}
