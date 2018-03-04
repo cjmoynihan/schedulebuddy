@@ -18,6 +18,9 @@
 	// list of friends
 	var friends = [];
 	
+	// TODO: MAP FRIEND USERNAMES TO LIST
+	var friendEvents = [];
+	
 	loadEvents(USERNAME);
 	loadFriends(USERNAME);
 	
@@ -206,12 +209,17 @@
 		ctx.fillStyle = generateColor();
 		ctx.fillRect(box_x, box_y, box_width, box_height);
 		
-		// draw event name centered 
+		// draw event name and time *if space*
 		var font_size = 30;
 		ctx.font = font_size + "px Arial";
 		ctx.fillStyle = '#000000';
-		ctx.fillText(event.event_name, box_x, box_y + font_size);
-		ctx.fillText(start_date.getHours() + ':' + start_date.getMinutes() + ' - ' + end_date.getHours() + ":" + end_date.getMinutes(), box_x, box_y + 2 * font_size);
+		
+		if (box_height >= 32) {
+			ctx.fillText(event.event_name, box_x, box_y + font_size);
+		}
+		if (box_height >= 64) {
+			ctx.fillText(formatTime(start_date.getHours(), start_date.getMinutes()) + ' - ' + formatTime(end_date.getHours(), end_date.getMinutes()), box_x, box_y + 2 * font_size);
+		}
 	}
 	
 	function drawCalendar() {
@@ -221,7 +229,7 @@
 		
 		// draw vertical grid lines
 		ctx.fillStyle = '#000000';
-		for (var i = 0; i < 24; i++) {
+		for (var i = 0; i <= 24; i++) {
 			ctx.moveTo(0, i * hour_height);
 			ctx.lineTo(canvas.width, i * hour_height);
 			ctx.stroke();
@@ -297,4 +305,9 @@
 		var g = (Math.round(Math.random()* 127) + 127).toString(16);
 		var b = (Math.round(Math.random()* 127) + 127).toString(16);
 		return '#' + r + g + b;
+	}
+	
+	// formats hours:minutes date to HH:MM AM/PM
+	function formatTime(hours, minutes) {
+		return hours + ":" + minutes; // TODO
 	}
