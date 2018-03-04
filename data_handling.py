@@ -107,7 +107,7 @@ class Database:
         """
         Gets the id from a user
         """
-        user_id = self.c.execute("SELECT user_id FROM users WHERE username = ?").fetchone()
+        user_id = self.c.execute("SELECT user_id FROM users WHERE username = ?", (username,)).fetchone()
         if user_id is None:
             raise ValueError("User {0} doesn't exist".format(username))
         return int(user_id[0])
