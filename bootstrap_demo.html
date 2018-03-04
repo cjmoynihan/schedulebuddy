@@ -94,13 +94,15 @@
 		
 		<button type="button" class="btn btn-primary" id="submit_event_btn">Create</button>
 	</body>
-	
+	<script>
+		var USERNAME = 'stefan4472';
+	</script>
 	<script>
 	// url of webserver that will handle requests
 	var HOST_URL = 'http://partrico.pythonanywhere.com'
 	
 	// name of user using the website TODO: READ FROM SOMEWHERE ELSE
-	var USERNAME = 'stefan4472';
+	//var USERNAME = 'stefan4472';
 	
 	// canvas where calendar is drawn
 	var canvas = document.getElementById("calendarCanvas");
@@ -184,6 +186,7 @@
 		// create HTTP request and use generated GET request
 		request_obj = new XMLHttpRequest();
 		request_obj.open("GET", getEventsRequest(USERNAME), true);
+		request_obj.setRequestHeader('Access-Control-Allow-Origin', '*');
 		request_obj.send(null);
 		
 		// handle response: parse and add to events list
@@ -191,6 +194,12 @@
 			// request is ready
 			if (request_obj.readyState == 4)  { 
 				prompt('Received info: ' + request_obj.responseText);
+				
+				// parse reply and add events to list
+				var received_events = JSON.parse(request_obj.responseText);
+				for (int i = 0; i < received_events.length; i++) {
+					events.push(received_events[i]);
+				}
 			}
 		};
 	}
@@ -214,6 +223,7 @@
 		// make server request to add event
 		request_obj = new XMLHttpRequest();
 		request_obj.open("GET", addEventRequest(USERNAME, name, getUTCTime(day, startTimeHr, startTimeMin), getUTCTime(day, endTimeHr, endTimeMin)), true);
+		request_obj.setRequestHeader('Access-Control-Allow-Origin', '*');
 		request_obj.send(null);
 		
 		// handle response: parse and add to events list
@@ -309,12 +319,12 @@
 	
 	// create string request to get all events for user
 	function getEventsRequest(username) {
-		return HOST_URL + "/get_events/" + username;
+		return "https://cors-anywhere.herokuapp.com/" + HOST_URL + "/get_events/" + username;
 	}
 	
 	// create string request to add an event for user. Takes times in UTC
 	function addEventRequest(username, event_name, start_time_utc, end_time_utc) {
-		return HOST_URL + "/add_event?username=" + USERNAME + "&event_name=" + event_name + "&start_time=" + start_time_utc + "&end_time=" + end_time_utc;
+		return "https://cors-anywhere.herokuapp.com/" + HOST_URL + "/add_event?username=" + USERNAME + "&event_name=" + event_name + "&start_time=" + start_time_utc + "&end_time=" + end_time_utc;
 		//add_event?username=stefan4472&event_name=Hackathon&start_time=1519534800&end_time=1519535800
 	}
 	</script>

@@ -2,7 +2,9 @@
 <html>
 <body>
 
+<h3>Schedule</h3>
 <canvas id="myCanvas" width="1400" height="1200"></canvas> 
+
 
 </body>
 <script>
@@ -41,9 +43,9 @@
 		// draw event name centered 
 		var font_size = 30;
 		ctx.font = font_size + "px Arial";
-	
 		ctx.fillStyle = '#000000';
 		ctx.fillText(name, box_x, box_y + font_size);
+		ctx.fillText(startTimeHr + ':' + startTimeMin + ' - ' + endTimeHr + ":" + endTimeMin, box_x, box_y + 2 * font_size);
 	}
 	
 	function drawCalendar() {
@@ -69,6 +71,8 @@
 		}
 		
 		drawEvent('Practice', '#FF0000', 2, 5, 15, 7, 15);
+		drawEvent('Homework', '#00FF00', 3, 10, 30, 12, 30);
+		drawEvent('Lunch', '#0000FF', 3, 12, 45, 13, 30);
 	}
 </script>
 </html>
