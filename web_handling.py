@@ -89,7 +89,7 @@ def add_event():
 #            int(request.form['start_time'], int(request.form['end_time']))
         )
     except ValueError as e:
-        return str(repr(e))
+        return str(e) + '\n' + str(e.__traceback__)
     return "Added event successfully!!"
 
 @app.route('/get_events/<username>')
@@ -99,7 +99,7 @@ def get_events(username):
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
     except ValueError as e:
-        return str(repr(e))
+        return str(e) + '\n' + str(e.__traceback__)
 
 # @app.route('/add', methods=['POST'])
 # def add_entry():
