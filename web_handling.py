@@ -131,7 +131,7 @@ def get_friends(username):
 def get_inverse():
     try:
         return jsonify(get_db().get_inverse_schedule(
-            friends=request.args['usernames'],
+            friends=request.args['usernames'].split(','),
             start_time=request.args['start_time'],
             end_time=request.args['end_time']
         ))
