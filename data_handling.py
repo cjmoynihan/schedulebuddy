@@ -158,8 +158,8 @@ class Database:
                         # overlapping_times.append((pointer, end_time))
                     break
         overlapping_times = [{
-            'start_time': event.start_time,
-            'end_time': event.end_time
+            'start_time': event[0],
+            'end_time': event[1]
         } for event in overlapping_times]
         return overlapping_times
 
