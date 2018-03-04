@@ -160,7 +160,7 @@ def get_events(username):
         return str(e)
 
 @app.route('/get_events', methods=['GET', 'POST', 'OPTIONS', 'OPTION'])
-@crossdomain(origin='*')
+@crossdomain(origin='*', headers='*')
 def fixed_get_events():
     try:
         return jsonify(get_db().get_sorted_events(request.args['username']))
@@ -187,7 +187,7 @@ def get_friends(username):
 
 
 @app.route('/get_friends', methods=['GET','POST','OPTIONS', 'OPTION'])
-@crossdomain(origin='*')
+@crossdomain(origin='*', headers='*')
 def fixed_get_friends():
     try:
         return jsonify(get_db().get_friends(request.args['username']))
