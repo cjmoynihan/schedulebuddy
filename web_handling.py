@@ -134,7 +134,7 @@ def write_error(e):
         f.write(str(e) + '\n')
 
 
-@app.route('/add_event', methods=['GET', 'POST'])
+@app.route('/add_event', methods=['GET', 'POST', 'OPTIONS', 'OPTION'])
 @crossdomain(origin='*', headers='*')
 def add_event():
     try:
@@ -153,7 +153,7 @@ def add_event():
         return str(e)
     return "Added event successfully!!"
 
-@app.route('/get_events/<username>')
+@app.route('/get_events/<username>', methods=['OPTIONS','OPTION'])
 @crossdomain(origin='*', headers='*')
 def get_events(username):
     try:
@@ -169,7 +169,7 @@ def fixed_get_events():
     except ValueError as e:
         return str(e)
 
-@app.route('/add_friend', methods=['GET', 'POST'])
+@app.route('/add_friend', methods=['GET', 'POST', 'OPTIONS', 'OPTION'])
 @crossdomain(origin='*', headers='*')
 def add_friend():
     try:
@@ -181,7 +181,7 @@ def add_friend():
     except ValueError as e:
         return str(e)
 
-@app.route('/get_friends/<username>')
+@app.route('/get_friends/<username>', methods=['OPTIONS', 'OPTION'])
 @crossdomain(origin='*', headers='*')
 def get_friends(username):
     try:
@@ -198,7 +198,7 @@ def fixed_get_friends():
     except ValueError as e:
         return str(e)
 
-@app.route('/get_inverse', methods=['GET', 'POST'])
+@app.route('/get_inverse', methods=['GET', 'POST', 'OPTIONS', 'OPTION'])
 @crossdomain(origin='*', headers='*')
 def get_inverse():
     try:
