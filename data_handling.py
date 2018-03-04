@@ -154,7 +154,8 @@ class Database:
                     pointer = next_end_time
                 except ValueError:
                     if pointer != end_time:
-                        overlapping_times.append((pointer, end_time))
+                        overlapping_times.append(Event('', '', pointer, end_time, *([False]*7)))
+                        # overlapping_times.append((pointer, end_time))
                     break
         return overlapping_times
 
