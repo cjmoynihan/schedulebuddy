@@ -56,6 +56,7 @@ def jsonify(*args, **kwargs):
     from flask import jsonify
     response = jsonify(*args, **kwargs)
     response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Acesss-Control-Allow-Headers'] = '*'
     return response
 
 import data_handling as db
