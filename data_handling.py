@@ -3,9 +3,12 @@ import sqlite3 as sq3
 import itertools
 import bisect
 from collections import namedtuple
-from web_handling import write_error
 Event = namedtuple('Event', ['username', 'event_name', 'start_time', 'end_time'])
 import os, sys
+
+def write_error(e):
+    with open(os.path.join(os.path.dirname(__file__), 'quick_err.txt'), 'a+') as f:
+        f.write(str(e) + '\n')
 
 DB_NAME = 'schedule.db'
 SCHEMA = 'schema.sql'
