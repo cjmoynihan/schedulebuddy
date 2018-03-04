@@ -141,16 +141,17 @@ class Database:
                 try:
                     # Remove all the events that don't matter
                     events_list[event_index] = events_list[event_index][next(i for (i, event) in enumerate(events_list[event_index]) if event.end_time > pointer):]
-                    if events_list[event_index][0].start_time > pointer:
+                    if events_list[event_index][0].start_time < pointer:
                         pointer = events_list[event_index][0].end_time
                         break
                 except StopIteration:
                     continue
-            try:
-                next_end_time = min((events[0].end_time for events in events_list if events))
-                overlapping_times.append((pointer, next_end_time))
-                pointer = next_end_time
-            except ValueError:
-                overlapping_times.append((pointer, end_time))
-                break
+            else:
+                try:
+                    next_end_time = min((events[0].start_time for events in events_list if events))
+                    overlapping_times.append((pointer, next_end_time))
+                    pointer = next_end_time
+                except ValueError:
+                    overlapping_times.append((pointer, end_time))
+                    break
         return overlapping_times
