@@ -19,7 +19,7 @@ create table if not exists recurring(
     fri bool not null,
     sat bool not null,
     sun bool not null
-)
+);
 create table if not exists friends(
     user_id int not null,
     friend_id int not null
