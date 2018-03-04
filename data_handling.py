@@ -128,3 +128,29 @@ class Database:
             VALUES(?, ?)
             """, (user_id, friend_id))
             self.conn.commit()
+
+    def get_inverse_schedule(self, friends, start_time, end_time):
+        # Keep track of everyone's schedules
+        events_list = [self.get_sorted_events(friend) for friend in friends]
+        # These are the times we can 'make it work'
+        overlapping_times = list()
+        pointer = start_time
+        while pointer < end_time:
+            # Move forward the pointer until we find times everyone has free
+            for event_index in range(events_list):
+                try:
+                    # Remove all the events that don't matter
+                    events_list[event_index] = events_list[event_index][next(i for (i, event) in enumerate(events_list[event_index]) if event.end_time > pointer):]
+                    if events_list[event_index][0].start_time > pointer:
+                        pointer = events_list[event_index][0].end_time
+                        break
+                except StopIteration:
+                    continue
+            try:
+                next_end_time = min((events[0].end_time for events in events_list if events))
+                overlapping_times.append((pointer, next_end_time))
+                pointer = next_end_time
+            except ValueError:
+                overlapping_times.append((pointer, end_time))
+                break
+        return overlapping_times
