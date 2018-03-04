@@ -83,6 +83,7 @@ def add_event():
     try:
         write_error(list(request.args.values()))
         write_error(request.args)
+        write_error(request.args['username'])
         get_db().add_event(
             **request.args
 #            *(val for (arg, val) in request.args)
