@@ -127,3 +127,13 @@ def get_friends(username):
     except ValueError as e:
         return str(e)
 
+@app.route('/get_inverse', methods=['GET', 'POST'])
+def get_inverse():
+    try:
+        return jsonify(get_db().get_inverse_schedule(
+            friends=request.args['usernames'],
+            start_time=request.args['start_time'],
+            end_time=request.args['end_time']
+        ))
+    except ValueError as e:
+        return e
