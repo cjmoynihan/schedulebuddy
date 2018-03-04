@@ -9,7 +9,7 @@ from flask import Flask, request, session, g, redirect, url_for, abort, \
 def jsonify(*args, **kwargs):
     from flask import jsonify
     response = jsonify(*args, **kwargs)
-    response.headers['Access-Control-Allow-Origin']='*'
+    response.headers['Access-Control-Allow-Origin'] = '*'
     return response
 
 import data_handling as db

@@ -101,6 +101,9 @@ class Database:
         return int(self.c.execute("SELECT user_id FROM users WHERE username = ?", (username,)).fetchone()[0])
 
     def add_friend(self, username, friend_username):
+        """
+        Adds a friend to the database as long as it doesn't already exist
+        """
         user_id, friend_id = map(self.get_id, (username, friend_username))
         try:
             next(self.c.execute("SELECT * FROM friends WHERE user_id = ? AND friend_id = ?", (user_id, friend_id)))
@@ -111,5 +114,5 @@ class Database:
             self.c.execute("""
             INSERT INTO friends(user_id, friend_id)
             VALUES(?, ?)
-            """, user_id, friend_id)
+            """, (user_id, friend_id))
             self.conn.commit()
