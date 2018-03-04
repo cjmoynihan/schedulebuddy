@@ -40,12 +40,19 @@
 		// make sure user entered info for each field
 		if (event_name === "") {
 			alert("Please Enter Event Name");
+			return;
+		}
+		else if (event_name.length > 11) {
+			alert("Event Name Can't Be Longer Than 11 Letters");
+			return;
 		}
 		else if (start_time === "") {
 			alert("Please Enter Start Time");
+			return;
 		}
 		else if (end_time === "") {
 			alert("Please Enter End Time");
+			return;
 		}
 		else {
 			// parse day, start, end times from input fields and createEvent()
@@ -73,6 +80,10 @@
 		
 		var friend_name = document.getElementById('friendNameInput').value;
 		
+		if (friend_name === USERNAME) {
+			alert("Sorry, but you can't add yourself as a friend!!");
+			return;
+		}
 		// create HTTP request to add friend to database
 		request_obj = new XMLHttpRequest();
 		request_obj.open("GET", addFriendRequest(USERNAME, friend_name), true);
@@ -147,28 +158,8 @@
 						console.log("Adding friend " + parsed_friends[i]);
 						friends.push(parsed_friends[i]);
 						addFriendToUI(parsed_friends[i]);
-						
-						/*friend_event_requests.push(new XMLHttpRequest());
-						friend_event_requests[i].open("GET", getEventsRequest(friends[i]), true);
-						friend_event_requests.send(null);
-						
-						// handle response: parse events and add them to friendEvents object
-						friend_event_requests[i].onreadystatechange = function() {
-							if (friend_event_requests[i].readyState == 4) {
-								console.log('Received events: ' + request_events.responseText);
-								// parse reply and add
-								if (friend_event_requests[i].responseText !== "") {
-									var parsed_events = JSON.parse(request_events.responseText);
-									for (var i = 0; i < parsed_events.length; i++) {
-										console.log('Adding received event: ' + JSON.stringify(parsed_events[i]));
-										events.push(parsed_events[i]);
-									}
-								}
-							}
-						}*/
 					}
 				}
-				//return request_friends.responseText === "" ? [] : JSON.parse(request_friends.responseText);
 			}
 		};
 		
@@ -220,13 +211,14 @@
 				console.log("Adding " + friend_name + " to calendar");
 			}
 			new_checkbox.checked = !new_checkbox.checked;
-			// TODO: ADD FRIEND'S DATA TO CALENDAR
+			drawCalendar();
 		});
 		document.getElementById('friendSection').appendChild(new_checkbox);
 	}
 	
 	// draws given event object to calendar using the given start time of the week
-	function drawEvent(event, weekStartTime) {
+	// color is optional, by default generated randomly
+	function drawEvent(event, weekStartTime, color='') {
 		console.log("Drawing event " + JSON.stringify(event));
 		console.log("Event starts at " + (new Date(event.start_time)).toString() + ". Week starts at " + (new Date(weekStartTime)).toString());
 		// don't do anything if event happens before or after given week
@@ -245,19 +237,22 @@
 		
 		console.log("Box coordinates are " + box_x + ", " + box_y + " with w/h " + box_width + ", " + box_height);
 		// draw box
-		ctx.fillStyle = generateColor();
+		ctx.fillStyle = color === '' ? generateColor() : color;
 		ctx.fillRect(box_x, box_y, box_width, box_height);
 		
 		// draw event name and time *if space*
-		var font_size = 30;
-		ctx.font = font_size + "px Arial";
+		var event_font_size = 30;
+		ctx.font = event_font_size + "px Arial";
 		ctx.fillStyle = '#000000';
 		
-		if (box_height >= 32) {
-			ctx.fillText(event.event_name, box_x, box_y + font_size);
+		if (box_height >= event_font_size) {
+			ctx.fillText(event.event_name, box_x, box_y + event_font_size);
 		}
-		if (box_height >= 64) {
-			ctx.fillText(formatTime(start_date.getHours(), start_date.getMinutes()) + ' - ' + formatTime(end_date.getHours(), end_date.getMinutes()), box_x, box_y + 2 * font_size);
+		// determine how big subtext should be (and if it can fit)
+		if (box_height - event_font_size >= 16) {
+			var time_font_size = (box_height - event_font_size > 32) ? 20 : box_height - event_font_size;
+			ctx.font = time_font_size + 'px Arial';
+			ctx.fillText(formatTime(start_date.getHours(), start_date.getMinutes()) + ' - ' + formatTime(end_date.getHours(), end_date.getMinutes()), box_x, box_y + event_font_size + time_font_size);
 		}
 	}
 	
@@ -270,6 +265,10 @@
 		// draw week days and dates along top canvas
 		var datesCanvas = document.getElementById('datesCanvas');
 		var datesCtx = datesCanvas.getContext('2d');
+		
+		// white outer
+		datesCtx.fillStyle = '#FFFFFF';
+		datesCtx.fillRect(0, 0, datesCanvas.width, datesCanvas.height);
 		
 		datesCtx.font = '30px Arial';
 		datesCtx.fillStyle = '#000000';
@@ -298,8 +297,22 @@
 		}
 		
 		var start_time = getWeekStartTimeUTC((new Date()).getTime());
-		for (var i = 0; i < events.length; i++) {
-			drawEvent(events[i], start_time);
+		
+		// check if any friends are selected: make server request to get times where people are free
+		if (shownFriends.length) {
+			console.log("User wants to see calendar with friends " + JSON.stringify(shownFriends));
+			// all events will be drawn in one color
+			var display_color = generateColor();
+			
+			// TODO: HTML REQUEST
+			for (var i = 0; i < events.length; i++) {
+				drawEvent(events[i], start_time, display_color);
+			}
+		} else {
+			// draw user's events
+			for (var i = 0; i < events.length; i++) {
+				drawEvent(events[i], start_time);
+			}
 		}
 	}
 	
