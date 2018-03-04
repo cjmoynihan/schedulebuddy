@@ -80,7 +80,7 @@ def logout():
 
 @app.route('/show_calendar')
 def show_calendar():
-    return "Hello World! We did it!"
+    return render_template('calendar.html')
 
 def write_error(e):
     with open(os.path.join(os.path.dirname(__file__), 'quick_err.txt'), 'a+') as f:
