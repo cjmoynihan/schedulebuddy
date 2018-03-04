@@ -21,8 +21,8 @@
 	// list of friends
 	var friends = [];
 	
-	// TODO: MAP FRIEND USERNAMES TO LIST
-	var friendEvents = [];
+	// stores lists of events friends have scheduled (added as username fields to object)
+	var friendEvents = new Object();
 	
 	loadEvents(USERNAME);
 	loadFriends(USERNAME);
@@ -109,7 +109,7 @@
 			if (request_events.readyState == 4)  { 
 				console.log('Received events: ' + request_events.responseText);
 				// parse reply and add
-				if (request_events.responseText !== "") {
+				if (request_events.responseText !== "[]") {
 					var parsed_events = JSON.parse(request_events.responseText);
 					for (var i = 0; i < parsed_events.length; i++) {
 						console.log('Adding received event: ' + JSON.stringify(parsed_events[i]));
@@ -139,15 +139,39 @@
 				
 				if (request_friends.responseText !== "") {
 					var parsed_friends = JSON.parse(request_friends.responseText);
+					// will create a list of HTTP requests to fetch data for each friend
+					//var friend_event_requests = [];
+					
+					// parse friends and create new request to load data
 					for (var i = 0; i < parsed_friends.length; i++) {
 						console.log("Adding friend " + parsed_friends[i]);
 						friends.push(parsed_friends[i]);
 						addFriendToUI(parsed_friends[i]);
+						
+						/*friend_event_requests.push(new XMLHttpRequest());
+						friend_event_requests[i].open("GET", getEventsRequest(friends[i]), true);
+						friend_event_requests.send(null);
+						
+						// handle response: parse events and add them to friendEvents object
+						friend_event_requests[i].onreadystatechange = function() {
+							if (friend_event_requests[i].readyState == 4) {
+								console.log('Received events: ' + request_events.responseText);
+								// parse reply and add
+								if (friend_event_requests[i].responseText !== "") {
+									var parsed_events = JSON.parse(request_events.responseText);
+									for (var i = 0; i < parsed_events.length; i++) {
+										console.log('Adding received event: ' + JSON.stringify(parsed_events[i]));
+										events.push(parsed_events[i]);
+									}
+								}
+							}
+						}*/
 					}
 				}
 				//return request_friends.responseText === "" ? [] : JSON.parse(request_friends.responseText);
 			}
 		};
+		
 	}
 	
 	function addEvent(name, day, startTimeHr, startTimeMin, endTimeHr, endTimeMin) {
@@ -349,7 +373,7 @@
 	
 	// formats date object to [Weekday] Month/Day
 	function formatDate(dateObj) {
-		var weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+		var weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 		
-		return weekDays[dateObj.getDay()] + ' ' + (dateObj.getMonth() + 1) + '/' + (dateObj.getDate() + 1);
+		return weekDays[dateObj.getDay()] + ' ' + (dateObj.getMonth() + 1) + '/' + (dateObj.getDate());
 	}
