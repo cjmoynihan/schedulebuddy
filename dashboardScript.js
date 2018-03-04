@@ -12,6 +12,9 @@
 	var canvas = document.getElementById("calendarCanvas");
 	var ctx = canvas.getContext("2d");
 	
+	// set start time of week being shown to this week
+	var calendarStartTime = getWeekStartTimeUTC((new Date()).getTime());
+	
 	// list of Event objects, which will be drawn to the calendar
 	var events = [];
 	
@@ -112,7 +115,7 @@
 						console.log('Adding received event: ' + JSON.stringify(parsed_events[i]));
 						events.push(parsed_events[i]);
 					}
-					drawCalendar();
+					drawCalendar(calendarStartTime);
 				}
 			}
 		};
@@ -171,7 +174,7 @@
 				console.log('Server response to adding event: ' + request_obj.responseText);
 				// add event and redraw calendar
 				events.push(event);
-				drawCalendar();
+				drawCalendar(calendarStartTime);
 			}
 		};
 	}
@@ -222,10 +225,25 @@
 		}
 	}
 	
-	function drawCalendar() {
+	// draws calendar with all events starting at weekStartTime
+	function drawCalendar(weekStartTime) {
 		console.log("Drawing Calendar");
 		var day_width = canvas.width / 7;
 		var hour_height = canvas.height / 24;
+		
+		// draw week days and dates along top canvas
+		var datesCanvas = document.getElementById('datesCanvas');
+		var datesCtx = datesCanvas.getContext('2d');
+		
+		datesCtx.font = '30px Arial';
+		datesCtx.fillStyle = '#000000';
+		
+		// draw day of week and date on top of each day
+		week_date = new Date(weekStartTime);
+		for (var i = 0; i < 7; i++) {
+			datesCtx.fillText(formatDate(week_date), i * day_width, 32);
+			week_date.setTime(week_date.getTime() + 86400000);
+		}
 		
 		// draw vertical grid lines
 		ctx.fillStyle = '#000000';
@@ -309,5 +327,29 @@
 	
 	// formats hours:minutes date to HH:MM AM/PM
 	function formatTime(hours, minutes) {
-		return hours + ":" + minutes; // TODO
+		var str = '';
+		
+		if (hours == 0 || hours == 12) {
+			str += '12';
+		} else {
+			str += '' + (hours % 12);
+		}
+		str += ':';
+		if (minutes < 10) {
+			str += '0';
+		}
+		str += minutes;
+		if (hours >= 11) {
+			str += 'PM';
+		} else {
+			str += 'AM';
+		}
+		return str;
+	}
+	
+	// formats date object to [Weekday] Month/Day
+	function formatDate(dateObj) {
+		var weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+		
+		return weekDays[dateObj.getDay()] + ' ' + (dateObj.getMonth() + 1) + '/' + (dateObj.getDate() + 1);
 	}

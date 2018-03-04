@@ -23,7 +23,9 @@
 			<div class="col-sm-8">
 				<h3>My Schedule</h3>
 				<!-- set canvas to fill space allotted by Bootstrap -->
-				<canvas id="calendarCanvas" width="1400" height="1232" style="width: 100%;height: auto;"></canvas> 
+				<!-- displays dates and days above calendar (workaround to make drawing the calendar easier...) -->
+				<canvas id="datesCanvas" width="1400" height="32" style="width: 100%;"></canvas>
+				<canvas id="calendarCanvas" width="1400" height="1200" style="width: 100%;height: auto;"></canvas> 
 			</div>
 			
 			<div class="col-sm-4" id="friendPicker">
